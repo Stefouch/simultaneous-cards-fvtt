@@ -7,8 +7,10 @@ Hooks.on('init', () => {
     app: CardChooser,
     config: SIMOC,
   };
+  CONFIG.SIMOC = SIMOC;
 });
 
 Hooks.on('ready', () => {
   console.log(`${MODULE_NAME} | Ready!`);
+  Hooks.callAll('simocReady', CONFIG.SIMOC);
 });

@@ -2,10 +2,10 @@ SIMOC.AppName: Simultaneous Card Chooser
 SIMOC.ChooseStack: Choose a Cards Stack
 SIMOC.OnlyGM: Only the GM can initiate!
 SIMOC.Participant: Participant
-SIMOC.ParticipantHelpTooltip: Check participating tokens
+SIMOC.ParticipantHelpTooltip: List of tokens. Tick the checkbox to enable the participant.
 SIMOC.PrepareParticipants: Prepare Participants
 SIMOC.Start: Start
 SIMOC.Suit: Suit
-SIMOC.SuitHelpTooltip: Filter the cards for this participant by the allowed suits
+SIMOC.SuitHelpTooltip: Filter the cards for the participant by suits. Use comma for multiple allowed suits. Leave it empty for no filtering.
 SIMOC.User: User
-SIMOC.UserHelpTooltip: Select the user that will choose the card for this participant
+SIMOC.UserHelpTooltip: Select the user that will choose the card for this participant.
