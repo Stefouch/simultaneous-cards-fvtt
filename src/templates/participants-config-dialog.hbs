@@ -1,0 +1,32 @@
+<form autocomplete="off">
+	<div class="participants">
+		<h4>
+			{{localize "SIMOC.Participant"}}
+			<i class="fa-regular fa-circle-info" data-tooltip="{{localize "SIMOC.ParticipantHelpTooltip"}}" data-tooltip-direction="UP"></i>
+		</h4>
+		<h4>
+			{{localize "SIMOC.User"}}
+			<i class="fa-regular fa-circle-info" data-tooltip="{{localize "SIMOC.UserHelpTooltip"}}" data-tooltip-direction="UP"></i>
+		</h4>
+		<h4>
+			{{localize "SIMOC.Suit"}}
+			<i class="fa-regular fa-circle-info" data-tooltip="{{localize "SIMOC.SuitHelpTooltip"}}" data-tooltip-direction="UP"></i>
+		</h4>
+		{{#each participants}}
+			<label class="participant-info">
+				<input type="checkbox" id="{{id}}.checked" {{checked checked}}/>
+				<img class="avatar" src="{{img}}"/>
+				<span>{{name}}</span>
+			</label>
+			<select id="{{id}}.user">
+				{{selectOptions ../users selected=user.id localize=false}}
+			</select>
+			<input list="suits" type="text" id="{{id}}.suit"/>
+			<datalist id="suits">
+				{{#each ../suits}}
+					<option value="{{this}}">{{this}}</option>
+				{{/each}}
+			</datalist>
+		{{/each}}
+	</div>
+</form>

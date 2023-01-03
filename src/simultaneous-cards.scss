@@ -1,0 +1,32 @@
+.simultaneous-cards {
+}
+
+.participants-config {
+  .participants {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+
+  .participant-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 4px;
+    border-radius: 4px;
+
+    &:hover {
+      color: var(--color-text-hyperlink);
+      background-color: var(--color-text-dark-6);
+    }
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+    border: none;
+  }
+}
