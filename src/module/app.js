@@ -1,28 +1,28 @@
-import { MODULE_ID } from './constants';
+import { MODULE_ID, MODULE_NAME } from './constants';
 import { SIMOC } from './config';
+import { chooseCard, chooseCardsStack, getCardsStack } from '@utils/cards-util';
 import { getTokenOwner } from '@utils/token-utils';
 
 /**
  * @typedef {Object} CardChooserAppData
  * @property {ParticipantData[]} participants
- * @property {string} stackId
- * @property {boolean} [submitted=false]
  */
 
 /**
  * @typedef {Object} ParticipantData
- * @property {string} token
- * @property {string} user
- * @property {string} suit
- * @property {string} card
+ * @property {string}  token
+ * @property {string}  user
+ * @property {string}  stack
+ * @property {string} [card]
  */
 
 /**
  * @typedef {Object} Participant
  * @property {TokenDocument} token
- * @property {User} user
- * @property {string} suit
- * @property {Card} card
+ * @property {User}          user
+ * @property {Cards}         stack
+ * @property {boolean}       isOwner
+ * @property {Card}         [card]
  */
 
 /**
@@ -36,6 +36,8 @@ export default class CardChooser extends Application {
   constructor(data, options) {
     super(options);
     this.data = data;
+    if (this.constructor._instance) throw new Error(`${MODULE_NAME} | An instance already exists!`);
+    this.constructor._instance = this;
   }
 
   /* ------------------------------------------ */
@@ -45,36 +47,46 @@ export default class CardChooser extends Application {
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
       title: 'SIMOC.AppName',
-      template: `modules/${MODULE_ID}/templates/app.hbs`,
+      template: SIMOC.templates.app,
       classes: [MODULE_ID, game.system.id, 'sheet'],
       id: `${MODULE_ID}-app`,
+      width: 720,
+      height: 550,
     });
   }
 
-  /**
-   * @type {Cards}
-   * @readonly
-   */
-  get stack() {
-    let stack = game.cards.get(this.data.stackId);
-    if (!stack) stack = game.cards.getName(this.data.stackId);
-    return stack;
+  /* ------------------------------------------ */
+
+  static set _instance(instance) {
+    game[MODULE_ID].instance = instance;
   }
 
-  /**
-   * @type {Collection.<Card>}
-   * @readonly
-   */
-  get cards() {
-    return this.stack?.cards;
+  /** @type {CardChooser} */
+  static get _instance() {
+    return game[MODULE_ID].instance;
   }
+
+  /* ------------------------------------------ */
+
+  static get socket() {
+    return `module.${MODULE_ID}`;
+  }
+
+  static get socketEvents() {
+    return {
+      /** @type {'start'} */ start: 'start',
+      /** @type {'update'} */ update: 'update',
+    };
+  }
+
+  /* ------------------------------------------ */
 
   /**
    * @type {Collection.<Participant>}
    * @readonly
    */
   get participants() {
-    const participants = this.data.participants.map(p => this.#getParticipant(p));
+    const participants = this.data.participants.map(p => this.#createParticipant(p));
     return new Collection(participants.map(p => [p.token.id, p]));
   }
 
@@ -86,6 +98,7 @@ export default class CardChooser extends Application {
     const data = {};
     data.participants = this.participants.contents;
     data.isGM = game.user.isGM;
+    data.config = SIMOC;
     return data;
   }
 
@@ -95,10 +108,47 @@ export default class CardChooser extends Application {
    * @param {ParticipantData} data
    * @returns {Participant}
    */
-  #getParticipant(data) {
+  #createParticipant(data) {
     const token = canvas.scene.tokens.get(data.token);
     const user = game.users.get(data.user);
-    return { token, user, suit: data.suit };
+    const stack = game.cards.get(data.stack);
+    const card = stack.cards.get(data.card);
+    const isOwner = game.user.id === user.id;
+    return { token, user, stack, card, isOwner };
+  }
+
+  /* ------------------------------------------ */
+  /*  Event Listeners                           */
+  /* ------------------------------------------ */
+
+  /** @param {JQuery.<HTMLElement>} html */
+  activateListeners(html) {
+    super.activateListeners(html);
+
+    html.find('.participant .card.clickable').on('click', this._onCardChoose.bind(this));
+  }
+
+  async _onCardChoose(event) {
+    event.preventDefault();
+    const id = event.currentTarget.closest('.participant').dataset.participantId;
+    const participant = this.participants.get(id);
+
+    const card = await chooseCard(participant.stack.cards.contents);
+
+    this.updateCard(id, card.id);
+    this.constructor.sendUpdate(id, card.id);
+
+    // TODO dialog choose card
+    // TODO update app
+  }
+
+  /* ------------------------------------------ */
+  /*  Utility Methods                           */
+  /* ------------------------------------------ */
+
+  updateCard(participantId, cardId) {
+    this.data.participants.find(p => p.token === participantId).card = cardId;
+    return this.render(true);
   }
 
   /* ------------------------------------------ */
@@ -107,54 +157,48 @@ export default class CardChooser extends Application {
 
   /**
    * Creates a new instance.
-   * @param {string}   [stackId] ID or name of the cards stack to use
-   * @param {string[]} [suits]   Array of suits for filtering
+   * @param {string|string[]} [stackIds] Array of IDs or names of the cards stacks to use
    * @returns {Promise.<CardChooser>}
    */
-  static async create(stackId, suits) {
+  static async create(stackIds) {
     if (!game.user.isGM) {
       ui.notifications.warn('SIMOC.OnlyGM', { localize: true });
       return;
     }
+    if (!Array.isArray(stackIds)) stackIds = [stackIds];
 
-    let stack;
-    if (stackId) stack = game.cards.get(stackId);
-    if (stackId && !stack) stack = game.cards.getName(stackId);
-    if (!stack) stack = await this.chooseCardsStack();
-    if (!suits || suits.length <= 0) suits = [...new Set(stack.cards.map(c => c.suit))];
-    const participants = await this.chooseParticipants(suits);
+    let stacks = stackIds
+      .map(id => getCardsStack(id))
+      .filter(Boolean);
 
-    return new this({ stackId: stack.id, participants }).render(true);
-  }
+    if (!stacks.length) stacks = game.cards.contents;
 
-  /* ------------------------------------------ */
-
-  /**
-   * Gets a cards stack ID.
-   * @returns {Promise.<Cards>}
-   */
-  static async chooseCardsStack() {
-    const stacks = game.cards.contents;
-    if (stacks.length <= 1) return stacks[0];
-
-    const id = await Dialog.prompt({
+    const defaultStack = await chooseCardsStack(stacks, {
       title: game.i18n.localize('SIMOC.ChooseStack'),
-      content: await renderTemplate(SIMOC.templates.stackChooserDialog, { stacks }),
-      label: 'OK',
-      callback: html => html[0].querySelector('form').stack.value,
-      options: { classes: [MODULE_ID, game.system.id, 'dialog', 'stack-chooser'] },
     });
-    return stacks.find(s => s.id === id);
+
+    const participants = await this.chooseParticipants(stacks, defaultStack?.id);
+
+    if (!participants.length) {
+      ui.notifications.warn();
+      return;
+    }
+
+    this.startInstance(participants);
+
+    return new this({ participants }).render(true);
   }
 
   /* ------------------------------------------ */
 
   /**
    * Displays a dialog for the configuration of the participants.
-   * @param {string[]} [suits]
+   * @param {Cards[]}  stacks
+   * @param {string}  [defaultStackId]
+   * @returns {Promise.<ParticipantData[]>}
    */
-  static async chooseParticipants(suits) {
-    /** @type {TokenDocument[]} */
+  static async chooseParticipants(stacks, defaultStackId) {
+    /** @type {Collection.<TokenDocument>} */
     const tokens = canvas.scene.tokens;
     const selectedTokenIds = canvas.tokens.controlled.map(t => t.document.id);
 
@@ -173,7 +217,9 @@ export default class CardChooser extends Application {
         users: game.users
           .filter(u => u.active)
           .reduce((o, u) => { o[u.id] = u.name; return o; }, {}),
-        suits,
+        stacks: stacks.reduce((o, d) => { o[d.id] = d.name; return o; }, {}),
+        defaultStackId,
+        config: SIMOC,
       }),
       callback: html => html[0].querySelector('form'),
       label: game.i18n.localize('SIMOC.Start'),
@@ -191,11 +237,63 @@ export default class CardChooser extends Application {
         participants.push({
           token: id,
           user: form[`${id}.user`].value,
-          suit: form[`${id}.suit`].value,
+          stack: form[`${id}.stack`].value,
         });
       }
     }
 
     return participants;
+  }
+
+  /* ------------------------------------------ */
+  /*  Socket Operations                         */
+  /* ------------------------------------------ */
+
+  static startInstance(participants) {
+    console.log(`${MODULE_NAME} | Start`, participants);
+    game.socket.emit(this.socket, {
+      event: this.socketEvents.start,
+      leader: game.user.id,
+      participants,
+    });
+  }
+
+  static sendUpdate(participantId, cardId) {
+    console.log(`${MODULE_NAME} | Update`, participantId);
+    game.socket.emit(this.socket, {
+      event: this.socketEvents.update,
+      participant: participantId,
+      card: cardId,
+    });
+  }
+
+  static listen() {
+    game.socket.on(this.socket, data => {
+      console.log(`${MODULE_NAME} | Event: ${data.event.capitalize()}`);
+      let message;
+
+      switch (data.event) {
+        case this.socketEvents.start: {
+          const users = data.participants.map(p => p.user);
+          if(users.includes(game.user.id)) {
+            new this({ participants: data.participants }).render(true);
+            message = game.i18n.format('SIMOC.Notif.StartInstance', {
+              name: `<b>${game.users.get(data.leader).name}</b>`,
+            });
+          }
+          break;
+        }
+        case this.socketEvents.update: {
+          if (!this._instance) return;
+          this._instance.updateCard(data.participant, data.card);
+          this._instance.render(true);
+          message = game.i18n.format('SIMOC.Notif.UpdateInstance', {
+            name: `<b>${this._instance.participants.get(data.participant)?.user?.name}</b>`,
+          });
+          break;
+        }
+      }
+      if (message) ui.notifications.info(message);
+    });
   }
 }

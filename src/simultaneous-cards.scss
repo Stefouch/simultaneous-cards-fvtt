@@ -1,10 +1,61 @@
+$card-width: 200px;
+
 .simultaneous-cards {
+  .participants {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .participant {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: $card-width;
+  }
+
+  .participant-name {
+    text-align: center;
+  }
+
+  .participant-avatar {
+    width: $card-width * .5;
+    height: $card-width * .5;
+    border: none;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: $card-width;
+    height: $card-width * 1.5;
+    background-color: var(--color-border-dark-secondary);
+    border: 2px solid var(--color-border-dark-primary);
+    border-radius: 10px;
+
+    span {
+      font-size: var(--font-size-48);
+      color: var(--color-border-dark-tertiary);
+    }
+
+    &.clickable:hover {
+      border-color: var(--color-text-hyperlink);
+      span {
+        color: var(--color-text-hyperlink);
+      }
+    }
+  }
 }
 
 .participants-config {
   .participants {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: auto auto auto;
     align-items: center;
     gap: 4px;
     margin-bottom: 12px;

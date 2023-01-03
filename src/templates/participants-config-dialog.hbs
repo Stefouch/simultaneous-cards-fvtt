@@ -1,3 +1,4 @@
+{{! Note: SIMOC config is accessible within @root.config }}
 <form autocomplete="off">
 	<div class="participants">
 		<h4>
@@ -9,8 +10,8 @@
 			<i class="fa-regular fa-circle-info" data-tooltip="{{localize "SIMOC.UserHelpTooltip"}}" data-tooltip-direction="UP"></i>
 		</h4>
 		<h4>
-			{{localize "SIMOC.Suit"}}
-			<i class="fa-regular fa-circle-info" data-tooltip="{{localize "SIMOC.SuitHelpTooltip"}}" data-tooltip-direction="UP"></i>
+			{{localize "SIMOC.Cards"}}
+			<i class="fa-regular fa-circle-info" data-tooltip="{{localize "SIMOC.CardsHelpTooltip"}}" data-tooltip-direction="UP"></i>
 		</h4>
 		{{#each participants}}
 			<label class="participant-info">
@@ -21,12 +22,9 @@
 			<select id="{{id}}.user">
 				{{selectOptions ../users selected=user.id localize=false}}
 			</select>
-			<input list="suits" type="text" id="{{id}}.suit"/>
-			<datalist id="suits">
-				{{#each ../suits}}
-					<option value="{{this}}">{{this}}</option>
-				{{/each}}
-			</datalist>
+			<select id="{{id}}.stack">
+				{{selectOptions ../stacks selected=../defaultStackId localize=false}}
+			</select>
 		{{/each}}
 	</div>
 </form>
