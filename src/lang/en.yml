@@ -5,9 +5,12 @@ SIMOC.ChooseCardHint: Choose the card for the participant.
 SIMOC.Cards: Cards
 SIMOC.CardsHelpTooltip: Select the cards stack to use for the participant.
 SIMOC.Close: Quit
-SIMOC.OnlyGM: Only the GM can initiate!
+SIMOC.CloseConfirm: Are you sure?
 SIMOC.Participant: Participant
-SIMOC.ParticipantHelpTooltip: List of tokens. Tick the checkbox to add the token as a participant.
+SIMOC.ParticipantHelpTooltip: >-
+  List of tokens.
+  Tick the checkbox to add the token as a participant.
+  (Selected tokens on the scene are pre-checked.)
 SIMOC.PrepareParticipants: Prepare Participants
 SIMOC.Reveal: Reveal
 SIMOC.RevealAll: Reveal All
@@ -17,19 +20,23 @@ SIMOC.UserHelpTooltip: Select the user that will choose the card for the partici
 SIMOC.Validate: Validate Choices
 SIMOC.WaitForPlayers: Waiting for all players' choices ...
 SIMOC.ReadyForValidation: Ready to validate!
+SIMOC.Message.Flavor: Card chosen by {name}
+SIMOC.Notif.OnlyGM: Only the GM can initiate!
 SIMOC.Notif.InstanceError: A card choice instance already exists!
 SIMOC.Notif.ParticipantError: >-
   No participant!
   Please create tokens on the canvas and/or check them in the configuration dialog.
 SIMOC.Notif.StackError: >-
   No stack with cards were found!
-  Please first create a cards stack and add some cards in it. 
+  Please first create a cards stack and add some cards in it.
 SIMOC.Notif.StartInstance: '{name} started a new card choice instance!'
 SIMOC.Notif.UpdateInstance: '{name} chose a card for {participant}!'
 SIMOC.Notif.ValidateInstance: '{name} validated all choices!'
 SIMOC.Notif.CloseInstance: '{name} ended the card choice instance!'
 SIMOC.Notif.RevealCard: '{name} revealed the {card} card for {participant}!'
+SETTINGS.SIMOC.AddControlButtonName: Control Button
+SETTINGS.SIMOC.AddControlButtonHint: Add a control button for this module in the canvas control tools for tokens.
 SETTINGS.SIMOC.SendRevealMessageName: Send Reveal Message
-SETTINGS.SIMOC.SendRevealMessageHint: Whether to send a message when a chosen card is revealed.
+SETTINGS.SIMOC.SendRevealMessageHint: Send a message when a chosen card is revealed.
 SETTINGS.SIMOC.WhisperRevealMessageName: Whisper Messages
-SETTINGS.SIMOC.WhisperRevealMessageHint: Whether the messages should be whispered only to participants.
+SETTINGS.SIMOC.WhisperRevealMessageHint: When enabled, the reveal messages are sent (whispered) only to the participants.

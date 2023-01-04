@@ -1,1 +1,42 @@
-SIMOC.App.Name: Cartes
+SIMOC.AppName: Cartes Simultanées
+SIMOC.ChooseStack: Choisir le tas de cartes à utiliser par défaut
+SIMOC.ChooseCard: Choisir une Carte
+SIMOC.ChooseCardHint: Choisissez une carte pour le participant.
+SIMOC.Cards: Cartes
+SIMOC.CardsHelpTooltip: Sélectionnez le tas de cartes à utiliser pour le participant.
+SIMOC.Close: Quitter
+SIMOC.CloseConfirm: Etes-vous sûr·e ?
+SIMOC.Participant: Participant
+SIMOC.ParticipantHelpTooltip: >-
+  Liste des jetons.
+  Cochez la case pour ajouter le jeton comme participant.
+  (Les jetons sélectionnés sur la scène sont pré-cochés.)
+SIMOC.PrepareParticipants: Préparation des Participants
+SIMOC.Reveal: Révéler
+SIMOC.RevealAll: Tout révéler
+SIMOC.Start: Démarrer
+SIMOC.User: Utilisateur
+SIMOC.UserHelpTooltip: Sélectionnez l'utilisateur qui choisira la carte pour le participant.
+SIMOC.Validate: Valider les choix
+SIMOC.WaitForPlayers: En attente des choix des joueurs ...
+SIMOC.ReadyForValidation: Prêt à valider !
+SIMOC.Message.Flavor: Carte choisie par {name}
+SIMOC.Notif.OnlyGM: Seul the MJ peut initier !
+SIMOC.Notif.InstanceError: Une instance existe déjà !
+SIMOC.Notif.ParticipantError: >-
+  Pas de participant !
+  Veuillez créer des jetons dans l'écran et/ou les cocher dans le panneau de configuration.
+SIMOC.Notif.StackError: >-
+  Aucun tas avec des cartes n'a été trouvé !
+  Veuillez d'abord créer un tas de cartes et y ajouter des cartes.
+SIMOC.Notif.StartInstance: '{name} a démarré une nouvelle instance de choix de cartes !'
+SIMOC.Notif.UpdateInstance: '{name} a choisi une carte pour {participant} !'
+SIMOC.Notif.ValidateInstance: '{name} a validé tous les choix !'
+SIMOC.Notif.CloseInstance: '{name} a clôturé l''instance de choix de carte !'
+SIMOC.Notif.RevealCard: '{name} a révélé la carte {card} pour {participant} !'
+SETTINGS.SIMOC.AddControlButtonName: Bouton de contrôle
+SETTINGS.SIMOC.AddControlButtonHint: Ajouter un bouton de contrôle pour ce module dans les outils de contrôle de l'écran pour les jetons.
+SETTINGS.SIMOC.SendRevealMessageName: Message de révélation
+SETTINGS.SIMOC.SendRevealMessageHint: Envoyer un message lorsqu'une carte choisie est révélée.
+SETTINGS.SIMOC.WhisperRevealMessageName: Chuchoter
+SETTINGS.SIMOC.WhisperRevealMessageHint: Lorsqu'activé, les messages de révélation sont envoyés (chuchotés) seulement aux participants.

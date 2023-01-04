@@ -1,3 +1,5 @@
+@forward './styles/card-message.scss';
+
 $card-width: 150px;
 $card-height: $card-width * 1.5;
 
@@ -86,6 +88,8 @@ $card-height: $card-width * 1.5;
   }
 }
 
+/* ------------------------------------------ */
+
 .simultaneous-cards.card-chooser {
   ul.cards-list {
     display: flex;
@@ -125,6 +129,8 @@ $card-height: $card-width * 1.5;
   }
 }
 
+/* ------------------------------------------ */
+
 .simultaneous-cards.participants-config {
   .participants {
     display: grid;
@@ -152,24 +158,5 @@ $card-height: $card-width * 1.5;
     width: 36px;
     height: 36px;
     border: none;
-  }
-}
-
-.chat-message .card-draw {
-  margin-left: 4px;
-  margin-bottom: 4px;
-}
-
-.chat-message .card-draw .card-face {
-  height: $card-height * 2;
-  transition: all 0.2s ease-out;
-
-  &:hover {
-    box-shadow: 4px 6px 4px var(--color-shadow-dark);
-    z-index: 100;
-    transform:
-      translateX($card-width * .3)
-      translateY($card-width * .1)
-      scale(2.5);
   }
 }

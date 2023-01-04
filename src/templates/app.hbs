@@ -35,9 +35,9 @@
 {{#if isUnlocked}}
 <div class="messages">
 	{{#if isReady}}
-		<p>{{localize "SIMOC.ReadyForValidation"}}</p>
+		<span>{{localize "SIMOC.ReadyForValidation"}}</span>
 	{{else}}
-		<p>{{localize "SIMOC.WaitForPlayers"}}</p>
+		<span>{{localize "SIMOC.WaitForPlayers"}}</span>
 	{{/if}}
 </div>
 {{/if}}
@@ -50,12 +50,12 @@
 				{{localize "SIMOC.Validate"}}
 			</button>
 		{{else unless isAllRevealed}}
-			<button data-action="reveal-all">
+			<button class="dialog-button" data-action="reveal-all">
 				<i class="fa-solid fa-arrows-to-eye"></i>
 				{{localize "SIMOC.RevealAll"}}
 			</button>
 		{{else}}
-			<button data-action="close">
+			<button class="dialog-button" data-action="close">
 				<i class="fa-solid fa-person-to-door"></i>
 				{{localize "SIMOC.Close"}}
 			</button>

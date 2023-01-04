@@ -12,6 +12,15 @@ export function registerSystemSettings() {
     type: String,
     default: '0.0.0',
   });
+  game.settings.register(MODULE_ID, SETTINGS_KEYS.ADD_CONTROL_BUTTON, {
+    name: 'SETTINGS.SIMOC.AddControlButtonName',
+    hint: 'SETTINGS.SIMOC.AddControlButtonHint',
+    scope: 'world',
+    config: true,
+    requiresReload: true,
+    type: Boolean,
+    default: true,
+  });
   game.settings.register(MODULE_ID, SETTINGS_KEYS.SEND_REVEAL_MESSAGE, {
     name: 'SETTINGS.SIMOC.SendRevealMessageName',
     hint: 'SETTINGS.SIMOC.SendRevealMessageHint',

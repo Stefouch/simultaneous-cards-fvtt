@@ -5,6 +5,7 @@ export const SIMOC = {};
 SIMOC.templates = {
   app: `modules/${MODULE_ID}/templates/app.hbs`,
   cardChooserDialog: `modules/${MODULE_ID}/templates/card-chooser-dialog.hbs`,
+  cardMessage: `modules/${MODULE_ID}/templates/card-message.hbs`,
   participantsConfigDialog: `modules/${MODULE_ID}/templates/participants-config-dialog.hbs`,
 };
 

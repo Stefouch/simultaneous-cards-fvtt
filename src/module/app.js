@@ -167,6 +167,7 @@ export default class CardChooser extends Application {
     });
 
     if (!card) return;
+    if (this.validated) return;
     this.constructor.sendUpdate(id, { card: card.id });
     this.updateParticipant(id, { card: card.id });
   }
@@ -178,12 +179,12 @@ export default class CardChooser extends Application {
       case 'reveal': return this._onRevealAction(event);
       case 'reveal-all': return this._onRevealAllAction();
       case 'validate': return this._onValidateAction();
-      case 'close': return this.close();
+      case 'close': return this.close({ forceClose: true });
     }
   }
 
   _onRevealAction(event) {
-    const id = event.currentTarget.closest('.participant').dataset.participantId;
+    const id = event.currentTarget. closest('.participant').dataset.participantId;
     if (this.participants.get(id).revealed) return;
     this.constructor.sendReveal(id);
     this.updateParticipant(id, { revealed: true });
@@ -196,8 +197,10 @@ export default class CardChooser extends Application {
     for (const p of this.data.participants) {
       if (!p.revealed) {
         this.constructor.sendReveal(p.token);
-        this.createMessage(p.token);
         p.revealed = true;
+        if (game.settings.get(MODULE_ID, SETTINGS_KEYS.SEND_REVEAL_MESSAGE)) {
+          this.createMessage(p.token);
+        }
       }
     }
     this.render(true);
@@ -239,7 +242,10 @@ export default class CardChooser extends Application {
     const p = this.participants.get(participantId);
     const card = p.card;
     const chatData = {
-      flavor: 'dadada',
+      content: await renderTemplate(SIMOC.templates.cardMessage, { card }),
+      flavor: game.i18n.format('SIMOC.Message.Flavor', {
+        name: p.user.name,
+      }),
       speaker: ChatMessage.getSpeaker({
         token: p.token,
         actor: p.token.actor,
@@ -265,7 +271,7 @@ export default class CardChooser extends Application {
    */
   static async create(stackIds) {
     if (!game.user.isGM) {
-      ui.notifications.warn('SIMOC.OnlyGM', { localize: true });
+      ui.notifications.warn('SIMOC.Notif.OnlyGM', { localize: true });
       return;
     }
     if (!Array.isArray(stackIds)) stackIds = [stackIds];
@@ -318,7 +324,7 @@ export default class CardChooser extends Application {
     }));
 
     const form = await Dialog.prompt({
-      title: game.i18n.localize('SIMOC.PrepareParticipants'),
+      title: `${game.i18n.localize('SIMOC.AppName')}: ${game.i18n.localize('SIMOC.PrepareParticipants')}`,
       content: await renderTemplate(SIMOC.templates.participantsConfigDialog, {
         participants: tokenParticipants,
         users: game.users
@@ -357,7 +363,19 @@ export default class CardChooser extends Application {
   /* ------------------------------------------ */
 
   /** @override */
-  async close(options) {
+  async close(options = {}) {
+    if (!options.forceClose) {
+      const toClose = await Dialog.confirm({
+        title: game.i18n.localize('SIMOC.Close'),
+        content: game.i18n.localize('SIMOC.CloseConfirm'),
+        rejectClose: false,
+        options: {
+          classes: [MODULE_ID, game.system.id, 'dialog'],
+          minimizable: false,
+        },
+      });
+      if (!toClose) return;
+    }
     if (game.user.isGM) {
       this.constructor.closeInstance();
       this.constructor._instance = null;
