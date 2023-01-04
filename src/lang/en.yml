@@ -1,9 +1,10 @@
-SIMOC.AppName: Simultaneous Card Chooser
+SIMOC.AppName: Simultaneous Cards
 SIMOC.ChooseStack: Choose the Default Cards Stack to Use
 SIMOC.ChooseCard: Choose a Card
 SIMOC.ChooseCardHint: Choose the card for the participant.
 SIMOC.Cards: Cards
 SIMOC.CardsHelpTooltip: Select the cards stack to use for the participant.
+SIMOC.Close: Quit
 SIMOC.OnlyGM: Only the GM can initiate!
 SIMOC.Participant: Participant
 SIMOC.ParticipantHelpTooltip: List of tokens. Tick the checkbox to add the token as a participant.
@@ -17,10 +18,18 @@ SIMOC.Validate: Validate Choices
 SIMOC.WaitForPlayers: Waiting for all players' choices ...
 SIMOC.ReadyForValidation: Ready to validate!
 SIMOC.Notif.InstanceError: A card choice instance already exists!
+SIMOC.Notif.ParticipantError: >-
+  No participant!
+  Please create tokens on the canvas and/or check them in the configuration dialog.
+SIMOC.Notif.StackError: >-
+  No stack with cards were found!
+  Please first create a cards stack and add some cards in it. 
 SIMOC.Notif.StartInstance: '{name} started a new card choice instance!'
 SIMOC.Notif.UpdateInstance: '{name} chose a card for {participant}!'
 SIMOC.Notif.ValidateInstance: '{name} validated all choices!'
 SIMOC.Notif.CloseInstance: '{name} ended the card choice instance!'
 SIMOC.Notif.RevealCard: '{name} revealed the {card} card for {participant}!'
-SETTINGS.SIMOC.SendRevealMessageName: Reveal Message
+SETTINGS.SIMOC.SendRevealMessageName: Send Reveal Message
 SETTINGS.SIMOC.SendRevealMessageHint: Whether to send a message when a chosen card is revealed.
+SETTINGS.SIMOC.WhisperRevealMessageName: Whisper Messages
+SETTINGS.SIMOC.WhisperRevealMessageHint: Whether the messages should be whispered only to participants.

@@ -31,7 +31,7 @@ $card-height: $card-width * 1.5;
 
   .card {
     display: flex;
-    // flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
     width: $card-width;
@@ -59,6 +59,9 @@ $card-height: $card-width * 1.5;
 
     &.clickable:hover {
       border-color: var(--color-text-hyperlink);
+      img {
+        box-shadow: 0 0 12px 4px var(--color-text-hyperlink);
+      }
       span {
         color: var(--color-text-hyperlink);
       }
@@ -76,6 +79,10 @@ $card-height: $card-width * 1.5;
   .messages,
   .sheet-footer {
     margin-top: 12px;
+  }
+
+  .dialog-button.disabled i {
+    display: none;
   }
 }
 
@@ -145,5 +152,24 @@ $card-height: $card-width * 1.5;
     width: 36px;
     height: 36px;
     border: none;
+  }
+}
+
+.chat-message .card-draw {
+  margin-left: 4px;
+  margin-bottom: 4px;
+}
+
+.chat-message .card-draw .card-face {
+  height: $card-height * 2;
+  transition: all 0.2s ease-out;
+
+  &:hover {
+    box-shadow: 4px 6px 4px var(--color-shadow-dark);
+    z-index: 100;
+    transform:
+      translateX($card-width * .3)
+      translateY($card-width * .1)
+      scale(2.5);
   }
 }

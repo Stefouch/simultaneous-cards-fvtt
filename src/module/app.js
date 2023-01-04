@@ -20,6 +20,7 @@ import { getTokenOwner } from '@utils/token-utils';
 
 /**
  * @typedef {Object} Participant
+ * @property {string}        id      The token's ID (read-only)
  * @property {TokenDocument} token
  * @property {User}          user
  * @property {Cards}         stack
@@ -83,10 +84,10 @@ export default class CardChooser extends Application {
   static get socketEvents() {
     return {
       /** @type {'start'} */ start: 'start',
-      /** @type {'close'} */ close: 'close',
       /** @type {'update'} */ update: 'update',
-      /** @type {'reveal'} */ reveal: 'reveal',
       /** @type {'validate'} */ validate: 'validate',
+      /** @type {'reveal'} */ reveal: 'reveal',
+      /** @type {'close'} */ close: 'close',
     };
   }
 
@@ -102,7 +103,7 @@ export default class CardChooser extends Application {
    */
   get participants() {
     const participants = this.data.participants.map(p => this.#createParticipant(p));
-    return new Collection(participants.map(p => [p.token.id, p]));
+    return new Collection(participants.map(p => [p.id, p]));
   }
 
   /* ------------------------------------------ */
@@ -136,6 +137,7 @@ export default class CardChooser extends Application {
     return {
       token, user, stack, card,
       revealed: !!data.revealed,
+      get id() { return this.token.id; },
       get isOwner() { return this.user.id === game.user.id; },
     };
   }
@@ -176,23 +178,25 @@ export default class CardChooser extends Application {
       case 'reveal': return this._onRevealAction(event);
       case 'reveal-all': return this._onRevealAllAction();
       case 'validate': return this._onValidateAction();
+      case 'close': return this.close();
     }
   }
 
   _onRevealAction(event) {
     const id = event.currentTarget.closest('.participant').dataset.participantId;
     if (this.participants.get(id).revealed) return;
-    this.constructor.sendReveal(id, game.user.name);
+    this.constructor.sendReveal(id);
     this.updateParticipant(id, { revealed: true });
     if (game.settings.get(MODULE_ID, SETTINGS_KEYS.SEND_REVEAL_MESSAGE)) {
-      this.toMessage(id);
+      this.createMessage(id);
     }
   }
 
   _onRevealAllAction() {
     for (const p of this.data.participants) {
       if (!p.revealed) {
-        this.constructor.sendReveal(p.token, game.user.name);
+        this.constructor.sendReveal(p.token);
+        this.createMessage(p.token);
         p.revealed = true;
       }
     }
@@ -226,8 +230,28 @@ export default class CardChooser extends Application {
 
   /* ------------------------------------------ */
 
-  async toMessage(participantId) {
+  /**
+   * Sends a message with the selected card for the specified participant.
+   * @param {string} participantId
+   * @returns {Promise.<ChatMessage>}
+   */
+  async createMessage(participantId) {
     const p = this.participants.get(participantId);
+    const card = p.card;
+    const chatData = {
+      flavor: 'dadada',
+      speaker: ChatMessage.getSpeaker({
+        token: p.token,
+        actor: p.token.actor,
+        scene: p.token.scene,
+      }),
+      user: p.user.id,
+    };
+    if (game.settings.get(MODULE_ID, SETTINGS_KEYS.WHISPER_REVEAL_MESSAGE)) {
+      chatData.whisper = [...new Set(this.data.participants.map(pp => pp.user))];
+    }
+    // ChatMessage.applyRollMode(chatData, game.settings.get('core', 'rollMode'));
+    return card.toMessage(chatData);
   }
 
   /* ------------------------------------------ */
@@ -248,18 +272,22 @@ export default class CardChooser extends Application {
 
     let stacks = stackIds
       .map(id => getCardsStack(id))
-      .filter(Boolean);
+      .filter(stack => stack?.cards.size > 0);
 
-    if (!stacks.length) stacks = game.cards.contents;
+    if (!stacks.length) stacks = game.cards.filter(stack => stack.cards.size > 0);
+    if (!stacks.length) {
+      ui.notifications.error('SIMOC.Notif.StackError', { localize: true, permanent: true });
+      return;
+    }
 
     const defaultStack = await chooseCardsStack(stacks, {
       title: game.i18n.localize('SIMOC.ChooseStack'),
     });
 
-    const participants = await this.chooseParticipants(stacks, defaultStack?.id);
+    const participants = await this.configureParticipants(stacks, defaultStack?.id);
 
     if (!participants.length) {
-      ui.notifications.warn();
+      ui.notifications.warn('SIMOC.Notif.ParticipantError', { localize: true });
       return;
     }
 
@@ -276,7 +304,7 @@ export default class CardChooser extends Application {
    * @param {string}  [defaultStackId]
    * @returns {Promise.<ParticipantData[]>}
    */
-  static async chooseParticipants(stacks, defaultStackId) {
+  static async configureParticipants(stacks, defaultStackId) {
     /** @type {Collection.<TokenDocument>} */
     const tokens = canvas.scene.tokens;
     const selectedTokenIds = canvas.tokens.controlled.map(t => t.document.id);
@@ -377,10 +405,10 @@ export default class CardChooser extends Application {
     });
   }
 
-  static sendReveal(participantId, responsibleName) {
+  static sendReveal(participantId) {
     return this.emit(this.socketEvents.reveal, {
       participant: participantId,
-      by: responsibleName,
+      by: game.user.name,
     });
   }
 

@@ -46,7 +46,7 @@ export async function chooseCard(cards, options = {}) {
     options: {
       classes: [MODULE_ID, game.system.id, 'dialog', 'card-chooser'],
       resizable: true,
-      // width: 660,
+      width: 600,
       // height: 440,
     },
   });

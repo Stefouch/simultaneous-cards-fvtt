@@ -11,7 +11,6 @@
 						<img src="{{card.back.img}}"/>
 					{{/if}}
 				{{else if isOwner}}
-					{{!-- <img src="{{stack.img}}"/> --}}
 					<span class="active">
 						<i class="{{@root.config.icons.drawcard}}"></i>
 					</span>
@@ -23,7 +22,10 @@
 			</div>
 			{{#if (or isOwner ../isGM)}}
 			{{#unless (or revealed ../isUnlocked)}}
-				<button data-action="reveal">{{localize "SIMOC.Reveal"}}</button>
+				<button data-action="reveal">
+					<i class="fa-solid fa-eye"></i>
+					{{localize "SIMOC.Reveal"}}
+				</button>
 			{{/unless}}
 			{{/if}}
 		</div>
@@ -43,9 +45,20 @@
 {{#if isGM}}
 	<footer class="sheet-footer">
 		{{#if isUnlocked}}
-			<button class="button{{#unless isReady}} disabled{{/unless}}" data-action="validate"{{#unless isReady}} disabled{{/unless}}>{{localize "SIMOC.Validate"}}</button>
+			<button class="dialog-button{{#unless isReady}} disabled{{/unless}}" data-action="validate"{{#unless isReady}} disabled{{/unless}}>
+				<i class="fa-solid fa-check"></i>
+				{{localize "SIMOC.Validate"}}
+			</button>
 		{{else unless isAllRevealed}}
-			<button data-action="reveal-all">{{localize "SIMOC.RevealAll"}}</button>
+			<button data-action="reveal-all">
+				<i class="fa-solid fa-arrows-to-eye"></i>
+				{{localize "SIMOC.RevealAll"}}
+			</button>
+		{{else}}
+			<button data-action="close">
+				<i class="fa-solid fa-person-to-door"></i>
+				{{localize "SIMOC.Close"}}
+			</button>
 		{{/if}}
 	</footer>
 {{/if}}

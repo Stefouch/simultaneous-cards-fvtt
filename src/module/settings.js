@@ -20,4 +20,12 @@ export function registerSystemSettings() {
     type: Boolean,
     default: true,
   });
+  game.settings.register(MODULE_ID, SETTINGS_KEYS.WHISPER_REVEAL_MESSAGE, {
+    name: 'SETTINGS.SIMOC.WhisperRevealMessageName',
+    hint: 'SETTINGS.SIMOC.WhisperRevealMessageHint',
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: true,
+  });
 }

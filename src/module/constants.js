@@ -8,4 +8,5 @@ export const MODULE_NAME = '🎴 Simultaneous Cards';
 export const SETTINGS_KEYS = {
   /** @type {'moduleMigrationVersion'} */ MIGRATION_VERSION: 'moduleMigrationVersion',
   /** @type {'sendRevealMessage'} */ SEND_REVEAL_MESSAGE: 'sendRevealMessage',
+  /** @type {'whisperRevealMessage'} */ WHISPER_REVEAL_MESSAGE: 'whisperRevealMessage',
 };
