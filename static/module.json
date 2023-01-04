@@ -1,8 +1,8 @@
 {
   "id": "simultaneous-cards",
   "title": "Simultaneous Cards 🎴",
-  "description": "A system-agnostic module for the simultaneous choice of a card between all the players and the GM",
-  "version": "0.1.0",
+  "description": "A system-agnostic module for the simultaneous choice of cards between all the players and the GM",
+  "version": "1.0.0",
   "compatibility": {
     "minimum": 10,
     "verified": "10.291",
@@ -16,7 +16,7 @@
     }
   ],
   "localization": "",
-  "bugs": "https://github.com/fvtt-fria-ligan/simultaneous-cards-fvtt/issues",
+  "bugs": "https://github.com/Stefouch/simultaneous-cards-fvtt/issues",
   "media": [],
   "scripts": [],
   "esmodules": ["simultaneous-cards.js"],
@@ -34,13 +34,13 @@
       "path": "lang/fr.json"
     }
   ],
-  "url": "https://github.com/fvtt-fria-ligan/simultaneous-cards-fvtt",
-  "readme": "https://github.com/fvtt-fria-ligan/simultaneous-cards-fvtt/blob/main/README.md",
-  "changelog": "https://github.com/fvtt-fria-ligan/simultaneous-cards-fvtt/blob/main/CHANGELOG.md",
+  "url": "https://github.com/Stefouch/simultaneous-cards-fvtt",
+  "readme": "https://github.com/Stefouch/simultaneous-cards-fvtt/blob/main/README.md",
+  "changelog": "https://github.com/Stefouch/simultaneous-cards-fvtt/blob/main/CHANGELOG.md",
   "license": "LICENSE.txt",
   "socket": true,
-  "manifest": "https://github.com/fvtt-fria-ligan/simultaneous-cards-fvtt/releases/latest/download/module.json",
-  "download": "https://github.com/fvtt-fria-ligan/simultaneous-cards-fvtt/releases/download/latest/module.zip",
+  "manifest": "https://github.com/Stefouch/simultaneous-cards-fvtt/releases/latest/download/module.json",
+  "download": "https://github.com/Stefouch/simultaneous-cards-fvtt/releases/download/latest/module.zip",
   "flags": {
     "allowBugReporter": true
   }

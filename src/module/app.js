@@ -487,7 +487,7 @@ export default class CardChooser extends Application {
         // Close
         case this.socketEvents.close: {
           if (!this._instance) return;
-          this._instance.close();
+          this._instance.close({ forceClose: true });
           this._instance = null;
           message = game.i18n.format('SIMOC.Notif.CloseInstance', {
             name: `<b>${data.gm}</b>`,

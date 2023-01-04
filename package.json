@@ -1,8 +1,8 @@
 {
   "name": "simultaneous-cards-fvtt",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
-  "description": "A system-agnostic Foundry module for the simultaneous choice of a card between all the players and the GM",
+  "description": "A system-agnostic Foundry module for the simultaneous choice of cards between all the players and the GM",
   "scripts": {
     "dev": "cross-env NODE_ENV=development gulp build",
     "dev:watch": "cross-env NODE_ENV=development gulp watch",
@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fvtt-fria-ligan/simultaneous-cards-fvtt.git"
+    "url": "git+https://github.com/Stefouch/simultaneous-cards-fvtt.git"
   },
   "keywords": [
     "Cards",
@@ -31,21 +31,21 @@
   "contributors": [],
   "license": "GPLv3",
   "bugs": {
-    "url": "https://github.com/fvtt-fria-ligan/simultaneous-cards-fvtt/issues"
+    "url": "https://github.com/Stefouch/simultaneous-cards-fvtt/issues"
   },
-  "homepage": "https://github.com/fvtt-fria-ligan/simultaneous-cards-fvtt#readme",
+  "homepage": "https://github.com/Stefouch/simultaneous-cards-fvtt#readme",
   "devDependencies": {
     "@league-of-foundry-developers/foundry-vtt-types": "^9.280.0",
-    "@types/jquery": "3.5.14",
+    "@types/jquery": "^3.5.16",
     "@typhonjs-fvtt/eslint-config-foundry.js": "0.8.0",
     "chalk": "^5.2.0",
     "cross-env": "7.0.3",
     "devmoji": "2.3.0",
-    "esbuild": "^0.16.10",
+    "esbuild": "^0.16.14",
     "esbuild-sass-plugin": "^2.4.4",
     "eslint": "^8.30.0",
     "eslint-config-jquery": "^3.0.0",
-    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
     "execa": "^6.1.0",
     "fs-extra-plus": "^0.6.0",
