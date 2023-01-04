@@ -1,6 +1,7 @@
 import { MODULE_ID, MODULE_NAME } from '@module/constants';
 import { SIMOC } from '@module/config';
 import CardChooser from '@module/app';
+import { registerSystemSettings } from '@module/settings';
 
 Hooks.on('init', () => {
   game.simoc = game[MODULE_ID] = {
@@ -9,6 +10,8 @@ Hooks.on('init', () => {
     config: SIMOC,
   };
   CONFIG.SIMOC = SIMOC;
+
+  registerSystemSettings();
 });
 
 Hooks.on('ready', () => {

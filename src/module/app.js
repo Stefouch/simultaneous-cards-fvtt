@@ -6,14 +6,16 @@ import { getTokenOwner } from '@utils/token-utils';
 /**
  * @typedef {Object} CardChooserAppData
  * @property {ParticipantData[]} participants
+ * @property {boolean}          [locked=false]
  */
 
 /**
  * @typedef {Object} ParticipantData
- * @property {string}  token
- * @property {string}  user
- * @property {string}  stack
- * @property {string} [card]
+ * @property {string}   token
+ * @property {string}   user
+ * @property {string}   stack
+ * @property {string}  [card]
+ * @property {boolean} [revealed=false]
  */
 
 /**
@@ -22,6 +24,7 @@ import { getTokenOwner } from '@utils/token-utils';
  * @property {User}          user
  * @property {Cards}         stack
  * @property {boolean}       isOwner
+ * @property {boolean}      [revealed=false]
  * @property {Card}         [card]
  */
 
@@ -50,8 +53,8 @@ export default class CardChooser extends Application {
       template: SIMOC.templates.app,
       classes: [MODULE_ID, game.system.id, 'sheet'],
       id: `${MODULE_ID}-app`,
-      width: 720,
-      height: 550,
+      // width: 720,
+      // height: 550,
     });
   }
 
@@ -75,11 +78,17 @@ export default class CardChooser extends Application {
   static get socketEvents() {
     return {
       /** @type {'start'} */ start: 'start',
+      /** @type {'close'} */ close: 'close',
       /** @type {'update'} */ update: 'update',
+      /** @type {'reveal'} */ reveal: 'reveal',
     };
   }
 
   /* ------------------------------------------ */
+
+  get locked() {
+    return !!this.data.locked;
+  }
 
   /**
    * @type {Collection.<Participant>}
@@ -95,10 +104,13 @@ export default class CardChooser extends Application {
   /* ------------------------------------------ */
 
   getData() {
-    const data = {};
-    data.participants = this.participants.contents;
-    data.isGM = game.user.isGM;
-    data.config = SIMOC;
+    const data = {
+      participants: this.participants.contents,
+      isGM: game.user.isGM,
+      isReady: this.data.participants.every(p => Boolean(p.card)),
+      isUnlocked: !this.locked,
+      config: SIMOC,
+    };
     return data;
   }
 
@@ -113,8 +125,12 @@ export default class CardChooser extends Application {
     const user = game.users.get(data.user);
     const stack = game.cards.get(data.stack);
     const card = stack.cards.get(data.card);
-    const isOwner = game.user.id === user.id;
-    return { token, user, stack, card, isOwner };
+    // const isOwner = game.user.id === user.id;
+    return {
+      token, user, stack, card,
+      revealed: !!data.revealed,
+      get isOwner() { return this.user.id === game.user.id; },
+    };
   }
 
   /* ------------------------------------------ */
@@ -125,7 +141,8 @@ export default class CardChooser extends Application {
   activateListeners(html) {
     super.activateListeners(html);
 
-    html.find('.participant .card.clickable').on('click', this._onCardChoose.bind(this));
+    html.find('.card.clickable').on('click', this._onCardChoose.bind(this));
+    html.find('button[data-action]').on('click', this._onButtonAction.bind(this));
   }
 
   async _onCardChoose(event) {
@@ -135,19 +152,35 @@ export default class CardChooser extends Application {
 
     const card = await chooseCard(participant.stack.cards.contents);
 
-    this.updateCard(id, card.id);
+    this.updateParticipant(id, { card: card.id });
     this.constructor.sendUpdate(id, card.id);
+  }
 
-    // TODO dialog choose card
-    // TODO update app
+  _onButtonAction(event) {
+    event.preventDefault();
+    const btn = event.currentTarget;
+    switch (btn.dataset.action) {
+      case 'reveal':
+      case 'reveal-all':
+      case 'validate':
+    }
   }
 
   /* ------------------------------------------ */
   /*  Utility Methods                           */
   /* ------------------------------------------ */
 
-  updateCard(participantId, cardId) {
-    this.data.participants.find(p => p.token === participantId).card = cardId;
+  /**
+   * Updates a participant with new data.
+   * @param {string} participantId ID of the participant to update
+   * @param {ParticipantData} data Update data
+   * @returns {this}
+   */
+  updateParticipant(participantId, data) {
+    const participant = this.data.participants.find(p => p.token === participantId);
+    for (const [k, v] of Object.entries(data)) {
+      participant[k] = v;
+    }
     return this.render(true);
   }
 
@@ -273,6 +306,7 @@ export default class CardChooser extends Application {
       let message;
 
       switch (data.event) {
+        // Start
         case this.socketEvents.start: {
           const users = data.participants.map(p => p.user);
           if(users.includes(game.user.id)) {
@@ -283,9 +317,11 @@ export default class CardChooser extends Application {
           }
           break;
         }
+        // Update
         case this.socketEvents.update: {
           if (!this._instance) return;
-          this._instance.updateCard(data.participant, data.card);
+          if (this._instance.locked) return;
+          this._instance.updateParticipant(data.participant, { card: data.card });
           this._instance.render(true);
           message = game.i18n.format('SIMOC.Notif.UpdateInstance', {
             name: `<b>${this._instance.participants.get(data.participant)?.user?.name}</b>`,

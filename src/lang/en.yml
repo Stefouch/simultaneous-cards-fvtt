@@ -6,8 +6,12 @@ SIMOC.OnlyGM: Only the GM can initiate!
 SIMOC.Participant: Participant
 SIMOC.ParticipantHelpTooltip: List of tokens. Tick the checkbox to add the token as a participant.
 SIMOC.PrepareParticipants: Prepare Participants
+SIMOC.Reveal: Reveal
+SIMOC.RevealAll: Reveal All
 SIMOC.Start: Start
 SIMOC.User: User
 SIMOC.UserHelpTooltip: Select the user that will choose the card for the participant.
 SIMOC.Notif.StartInstance: '{name} started a new card choice instance!'
 SIMOC.Notif.UpdateInstance: '{name} chose a card!'
+SETTINGS.SIMOC.FilterOutDrawnCardsName: No Drawn Card
+SETTINGS.SIMOC.FilterOutDrawnCardsHint: Whether to filter out drawn cards from available card choices for the players.

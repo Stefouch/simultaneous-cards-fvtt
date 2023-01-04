@@ -18,8 +18,6 @@ export function getCardsStack(idOrName) {
  */
 export async function chooseCard(cards, options = {}) {
   if (cards.length <= 1) return cards[0];
-
-  return cards[0];
 }
 
 /**

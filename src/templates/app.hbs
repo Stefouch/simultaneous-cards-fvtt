@@ -3,19 +3,36 @@
 		<div class="participant" data-participant-id="{{token.id}}">
 			<img class="participant-avatar" src="{{token.texture.src}}"/>
 			<h3 class="participant-name">{{token.name}}</h3>
-			<div class="card{{#if isOwner}} clickable{{/if}}">
+			<div class="card{{#if (and isOwner ../isUnlocked)}} clickable{{/if}}">
 				{{#if card}}
-					<img src="{{card.img}}"/>
+					{{#if isOwner}}
+						<img src="{{card.img}}"/>
+					{{else}}
+						<img src="{{card.back.img}}"/>
+					{{/if}}
 				{{else if isOwner}}
-					<span>
+					<img src="{{stack.img}}"/>
+					{{!-- <span>
 						<i class="{{@root.config.icons.drawcard}}"></i>
-					</span>
+					</span> --}}
 				{{else}}
 					<span>
 						<i class="{{@root.config.icons.nocard}}"></i>
 					</span>
 				{{/if}}
 			</div>
+			{{#unless (or revealed ../isUnlocked)}}
+				<button data-action="reveal">{{localize "SIMOC.Reveal"}}</button>
+			{{/unless}}
 		</div>
 	{{/each}}
 </div>
+
+{{#if isGM}}
+	<footer class="sheet-footer">
+		<button data-action="validate"{{#unless isReady}} disabled{{/unless}}>{{localize "SIMOC.Validate"}}</button>
+		{{#if locked}}
+			<button data-action="reveal-all">{{localize "SIMOC.RevealAll"}}</button>
+		{{/if}}
+	</footer>
+{{/if}}
