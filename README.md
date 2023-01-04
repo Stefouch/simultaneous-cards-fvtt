@@ -11,7 +11,10 @@
 4. Configure the participants
 5. Choose your cards and reveal them!
 
-<img src="https://raw.githubusercontent.com/Stefouch/simultaneous-cards-fvtt/main/static/assets/screenshots/demog.gif" title="Simultaneous Cards Foundry Module Demo"/>
+<details>
+<summary>Click to see the demo</summary>
+<img src="https://raw.githubusercontent.com/Stefouch/simultaneous-cards-fvtt/main/static/assets/screenshots/demo.gif" title="Simultaneous Cards Foundry Module Demo"/>
+</details>
 
 ## Macro
 
