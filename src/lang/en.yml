@@ -1,7 +1,9 @@
 SIMOC.AppName: Simultaneous Card Chooser
 SIMOC.ChooseStack: Choose the Default Cards Stack to Use
+SIMOC.ChooseCard: Choose a Card
+SIMOC.ChooseCardHint: Choose the card for the participant.
 SIMOC.Cards: Cards
-SIMOC.CardsHelpTooltip: Cards stack to use for the participant.
+SIMOC.CardsHelpTooltip: Select the cards stack to use for the participant.
 SIMOC.OnlyGM: Only the GM can initiate!
 SIMOC.Participant: Participant
 SIMOC.ParticipantHelpTooltip: List of tokens. Tick the checkbox to add the token as a participant.
@@ -11,7 +13,14 @@ SIMOC.RevealAll: Reveal All
 SIMOC.Start: Start
 SIMOC.User: User
 SIMOC.UserHelpTooltip: Select the user that will choose the card for the participant.
+SIMOC.Validate: Validate Choices
+SIMOC.WaitForPlayers: Waiting for all players' choices ...
+SIMOC.ReadyForValidation: Ready to validate!
+SIMOC.Notif.InstanceError: A card choice instance already exists!
 SIMOC.Notif.StartInstance: '{name} started a new card choice instance!'
-SIMOC.Notif.UpdateInstance: '{name} chose a card!'
-SETTINGS.SIMOC.FilterOutDrawnCardsName: No Drawn Card
-SETTINGS.SIMOC.FilterOutDrawnCardsHint: Whether to filter out drawn cards from available card choices for the players.
+SIMOC.Notif.UpdateInstance: '{name} chose a card for {participant}!'
+SIMOC.Notif.ValidateInstance: '{name} validated all choices!'
+SIMOC.Notif.CloseInstance: '{name} ended the card choice instance!'
+SIMOC.Notif.RevealCard: '{name} revealed the {card} card for {participant}!'
+SETTINGS.SIMOC.SendRevealMessageName: Reveal Message
+SETTINGS.SIMOC.SendRevealMessageHint: Whether to send a message when a chosen card is revealed.

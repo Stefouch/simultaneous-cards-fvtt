@@ -1,4 +1,4 @@
-import { MODULE_ID, MODULE_NAME } from './constants';
+import { MODULE_ID, MODULE_NAME, SETTINGS_KEYS } from './constants';
 import { SIMOC } from './config';
 import { chooseCard, chooseCardsStack, getCardsStack } from '@utils/cards-util';
 import { getTokenOwner } from '@utils/token-utils';
@@ -6,7 +6,7 @@ import { getTokenOwner } from '@utils/token-utils';
 /**
  * @typedef {Object} CardChooserAppData
  * @property {ParticipantData[]} participants
- * @property {boolean}          [locked=false]
+ * @property {boolean}          [validated=false]
  */
 
 /**
@@ -39,7 +39,10 @@ export default class CardChooser extends Application {
   constructor(data, options) {
     super(options);
     this.data = data;
-    if (this.constructor._instance) throw new Error(`${MODULE_NAME} | An instance already exists!`);
+    if (this.constructor._instance) {
+      ui.notifications.error('SIMOC.Notif.InstanceError', { localize: true });
+      throw new Error(`${MODULE_NAME} | An instance already exists!`);
+    }
     this.constructor._instance = this;
   }
 
@@ -61,6 +64,8 @@ export default class CardChooser extends Application {
   /* ------------------------------------------ */
 
   static set _instance(instance) {
+    if (!instance) console.log(`${MODULE_NAME} | Instance destroyed!`);
+    else console.log(`${MODULE_NAME} | Instance created!`);
     game[MODULE_ID].instance = instance;
   }
 
@@ -81,13 +86,14 @@ export default class CardChooser extends Application {
       /** @type {'close'} */ close: 'close',
       /** @type {'update'} */ update: 'update',
       /** @type {'reveal'} */ reveal: 'reveal',
+      /** @type {'validate'} */ validate: 'validate',
     };
   }
 
   /* ------------------------------------------ */
 
-  get locked() {
-    return !!this.data.locked;
+  get validated() {
+    return !!this.data.validated;
   }
 
   /**
@@ -107,8 +113,9 @@ export default class CardChooser extends Application {
     const data = {
       participants: this.participants.contents,
       isGM: game.user.isGM,
+      isUnlocked: !this.validated,
       isReady: this.data.participants.every(p => Boolean(p.card)),
-      isUnlocked: !this.locked,
+      isAllRevealed: this.data.participants.every(p => p.revealed),
       config: SIMOC,
     };
     return data;
@@ -147,23 +154,56 @@ export default class CardChooser extends Application {
 
   async _onCardChoose(event) {
     event.preventDefault();
+    if (this.validated) return;
+
     const id = event.currentTarget.closest('.participant').dataset.participantId;
     const participant = this.participants.get(id);
 
-    const card = await chooseCard(participant.stack.cards.contents);
+    const card = await chooseCard(participant.stack.cards.contents, {
+      title: `${participant.token.name}: ${game.i18n.localize('SIMOC.ChooseCard')}`,
+      description: game.i18n.localize('SIMOC.ChooseCardHint'),
+    });
 
+    if (!card) return;
+    this.constructor.sendUpdate(id, { card: card.id });
     this.updateParticipant(id, { card: card.id });
-    this.constructor.sendUpdate(id, card.id);
   }
 
   _onButtonAction(event) {
     event.preventDefault();
     const btn = event.currentTarget;
     switch (btn.dataset.action) {
-      case 'reveal':
-      case 'reveal-all':
-      case 'validate':
+      case 'reveal': return this._onRevealAction(event);
+      case 'reveal-all': return this._onRevealAllAction();
+      case 'validate': return this._onValidateAction();
     }
+  }
+
+  _onRevealAction(event) {
+    const id = event.currentTarget.closest('.participant').dataset.participantId;
+    if (this.participants.get(id).revealed) return;
+    this.constructor.sendReveal(id, game.user.name);
+    this.updateParticipant(id, { revealed: true });
+    if (game.settings.get(MODULE_ID, SETTINGS_KEYS.SEND_REVEAL_MESSAGE)) {
+      this.toMessage(id);
+    }
+  }
+
+  _onRevealAllAction() {
+    for (const p of this.data.participants) {
+      if (!p.revealed) {
+        this.constructor.sendReveal(p.token, game.user.name);
+        p.revealed = true;
+      }
+    }
+    this.render(true);
+  }
+
+  _onValidateAction() {
+    if (this.validated) return;
+    this.constructor.validateInstance();
+    this.data.validated = true;
+    this.render(true);
   }
 
   /* ------------------------------------------ */
@@ -173,15 +213,21 @@ export default class CardChooser extends Application {
   /**
    * Updates a participant with new data.
    * @param {string} participantId ID of the participant to update
-   * @param {ParticipantData} data Update data
+   * @param {ParticipantData} updateData Update data
    * @returns {this}
    */
-  updateParticipant(participantId, data) {
+  updateParticipant(participantId, updateData) {
     const participant = this.data.participants.find(p => p.token === participantId);
-    for (const [k, v] of Object.entries(data)) {
+    for (const [k, v] of Object.entries(updateData)) {
       participant[k] = v;
     }
     return this.render(true);
+  }
+
+  /* ------------------------------------------ */
+
+  async toMessage(participantId) {
+    const p = this.participants.get(participantId);
   }
 
   /* ------------------------------------------ */
@@ -279,30 +325,70 @@ export default class CardChooser extends Application {
   }
 
   /* ------------------------------------------ */
+  /*  Other Methods                             */
+  /* ------------------------------------------ */
+
+  /** @override */
+  async close(options) {
+    if (game.user.isGM) {
+      this.constructor.closeInstance();
+      this.constructor._instance = null;
+    }
+    return super.close(options);
+  }
+
+  /* ------------------------------------------ */
   /*  Socket Operations                         */
   /* ------------------------------------------ */
 
+  /**
+   * Emits some data.
+   * @param {string}  event
+   * @param {Object} [data]
+   */
+  static emit(event, data = {}) {
+    console.log(`${MODULE_NAME} | ${event.capitalize()}`, data);
+    return game.socket.emit(this.socket, { ...data, event });
+  }
+
   static startInstance(participants) {
-    console.log(`${MODULE_NAME} | Start`, participants);
-    game.socket.emit(this.socket, {
-      event: this.socketEvents.start,
-      leader: game.user.id,
+    return this.emit(this.socketEvents.start, {
+      gm: game.user.name,
       participants,
     });
   }
 
-  static sendUpdate(participantId, cardId) {
-    console.log(`${MODULE_NAME} | Update`, participantId);
-    game.socket.emit(this.socket, {
-      event: this.socketEvents.update,
-      participant: participantId,
-      card: cardId,
+  static closeInstance() {
+    return this.emit(this.socketEvents.close, {
+      gm: game.user.name,
     });
   }
 
+  static validateInstance() {
+    return this.emit(this.socketEvents.validate, {
+      gm: game.user.name,
+    });
+  }
+
+  static sendUpdate(participantId, updateData) {
+    return this.emit(this.socketEvents.update, {
+      participant: participantId,
+      updateData,
+    });
+  }
+
+  static sendReveal(participantId, responsibleName) {
+    return this.emit(this.socketEvents.reveal, {
+      participant: participantId,
+      by: responsibleName,
+    });
+  }
+
+  /* ------------------------------------------ */
+
   static listen() {
     game.socket.on(this.socket, data => {
-      console.log(`${MODULE_NAME} | Event: ${data.event.capitalize()}`);
+      console.log(`${MODULE_NAME} | Event Inbound: ${data.event.capitalize()}`);
       let message;
 
       switch (data.event) {
@@ -312,7 +398,7 @@ export default class CardChooser extends Application {
           if(users.includes(game.user.id)) {
             new this({ participants: data.participants }).render(true);
             message = game.i18n.format('SIMOC.Notif.StartInstance', {
-              name: `<b>${game.users.get(data.leader).name}</b>`,
+              name: `<b>${data.gm}</b>`,
             });
           }
           break;
@@ -320,11 +406,45 @@ export default class CardChooser extends Application {
         // Update
         case this.socketEvents.update: {
           if (!this._instance) return;
-          if (this._instance.locked) return;
-          this._instance.updateParticipant(data.participant, { card: data.card });
+          if (this._instance.validated) return;
+          this._instance.updateParticipant(data.participant, data.updateData);
           this._instance.render(true);
           message = game.i18n.format('SIMOC.Notif.UpdateInstance', {
             name: `<b>${this._instance.participants.get(data.participant)?.user?.name}</b>`,
+            participant: `<b>${this._instance.participants.get(data.participant).token.name}</b>`,
+          });
+          break;
+        }
+        // Validate
+        case this.socketEvents.validate: {
+          if (!this._instance) return;
+          this._instance.data.validated = true;
+          this._instance.render(true);
+          message = game.i18n.format('SIMOC.Notif.ValidateInstance', {
+            name: `<b>${data.gm}</b>`,
+          });
+          break;
+        }
+        // Reveal
+        case this.socketEvents.reveal: {
+          if (!this._instance) return;
+          const p = this._instance.participants.get(data.participant);
+          if (p.revealed) return;
+          this._instance.updateParticipant(data.participant, { revealed: true });
+          message = game.i18n.format('SIMOC.Notif.RevealCard', {
+            name: `<b>${data.by}</b>`,
+            participant: `<b>${p.token.name}</b>`,
+            card:`<b>${p.card.name}</b>`,
+          });
+          break;
+        }
+        // Close
+        case this.socketEvents.close: {
+          if (!this._instance) return;
+          this._instance.close();
+          this._instance = null;
+          message = game.i18n.format('SIMOC.Notif.CloseInstance', {
+            name: `<b>${data.gm}</b>`,
           });
           break;
         }

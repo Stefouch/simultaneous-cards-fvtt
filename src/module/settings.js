@@ -12,10 +12,9 @@ export function registerSystemSettings() {
     type: String,
     default: '0.0.0',
   });
-
-  game.settings.register(MODULE_ID, SETTINGS_KEYS.FILTER_OUT_DRAWN_CARDS, {
-    name: 'SETTINGS.SIMOC.FilterOutDrawnCardsName',
-    hint: 'SETTINGS.SIMOC.FilterOutDrawnCardsHint',
+  game.settings.register(MODULE_ID, SETTINGS_KEYS.SEND_REVEAL_MESSAGE, {
+    name: 'SETTINGS.SIMOC.SendRevealMessageName',
+    hint: 'SETTINGS.SIMOC.SendRevealMessageHint',
     scope: 'world',
     config: true,
     type: Boolean,

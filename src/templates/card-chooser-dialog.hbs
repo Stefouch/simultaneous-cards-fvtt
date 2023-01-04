@@ -1,0 +1,22 @@
+<form autocomplete="off">
+	<div class="cards-container">
+		{{#if description}}
+			<p>{{description}}</p>
+		{{/if}}
+		<ul class="cards-list">
+			{{#each cards}}
+				<li class="card">
+					<label for="{{id}}">
+						<input
+							type="radio"
+							name="card"
+							id="{{id}}"
+							value="{{id}}"
+						/>
+						<img src="{{img}}"/>
+					</label>
+				</li>
+			{{/each}}
+		</ul>
+	</div>
+</form>

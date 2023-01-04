@@ -1,13 +1,13 @@
 $card-width: 150px;
+$card-height: $card-width * 1.5;
 
-.simultaneous-cards {
+.simultaneous-cards.sheet {
   .participants {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     gap: 4px;
-    margin-bottom: 12px;
   }
 
   .participant {
@@ -15,7 +15,7 @@ $card-width: 150px;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    gap: 	4px;
+    gap: 4px;
     width: $card-width;
   }
 
@@ -31,18 +31,30 @@ $card-width: 150px;
 
   .card {
     display: flex;
-    flex-direction: column;
+    // flex-direction: column;
     justify-content: center;
     align-items: center;
     width: $card-width;
-    height: $card-width * 1.5;
-    background-color: var(--color-border-dark-secondary);
-    border: 2px solid var(--color-border-dark-primary);
+    height: $card-height;
     border-radius: 10px;
+
+    &.nocard {
+      background-color: var(--color-border-dark-secondary);
+      border: 2px solid var(--color-border-dark-primary);
+    }
 
     span {
       font-size: var(--font-size-48);
-      color: var(--color-border-dark-tertiary);
+      &.active {
+        color: var(--color-text-light-3);
+      }
+      &.inactive { 
+        color: var(--color-border-dark-tertiary);
+      }
+    }
+
+    &.clickable {
+      cursor: pointer;
     }
 
     &.clickable:hover {
@@ -52,9 +64,61 @@ $card-width: 150px;
       }
     }
   }
+
+  .messages {
+    color: #fff;
+    background-color: var(--color-border-dark-secondary);
+    border: 1px solid var(--color-border-dark-primary);
+    border-radius: 4px;
+    padding: 8px;
+  }
+
+  .messages,
+  .sheet-footer {
+    margin-top: 12px;
+  }
 }
 
-.participants-config {
+.simultaneous-cards.card-chooser {
+  ul.cards-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li.card {
+    max-width: $card-width;
+    max-height: $card-height;
+    min-height: $card-height;
+    flex-basis: auto;
+    flex-grow: 1;
+    text-align: center;
+  }
+
+  img {
+    width: $card-width;
+    transition: all 0.2s ease-out;
+
+    &:hover {
+      transform: translateY(4px) scale(1.2);
+    }
+  }
+
+  // Hides Radio
+  input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+}
+
+.simultaneous-cards.participants-config {
   .participants {
     display: grid;
     grid-template-columns: auto auto auto;
