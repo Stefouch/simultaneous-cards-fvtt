@@ -23,6 +23,11 @@ $card-height: $card-width * 1.5;
 
   .participant-name {
     text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    min-width: 1px;
   }
 
   .participant-avatar {
@@ -134,10 +139,19 @@ $card-height: $card-width * 1.5;
 .simultaneous-cards.participants-config {
   .participants {
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto 20% 30%;
     align-items: center;
     gap: 4px;
     margin-bottom: 12px;
+  }
+
+  .row-wrapper {
+    display: contents;
+
+    &:hover > * {
+      color: var(--color-text-hyperlink);
+      background-color: var(--color-text-dark-6);
+    }
   }
 
   .participant-info {
@@ -148,10 +162,10 @@ $card-height: $card-width * 1.5;
     gap: 4px;
     border-radius: 4px;
 
-    &:hover {
-      color: var(--color-text-hyperlink);
-      background-color: var(--color-text-dark-6);
-    }
+    // &:hover {
+    //   color: var(--color-text-hyperlink);
+    //   background-color: var(--color-text-dark-6);
+    // }
   }
 
   .avatar {

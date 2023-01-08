@@ -22,7 +22,7 @@
 			</div>
 			{{#if (or isOwner ../isGM)}}
 			{{#unless (or revealed ../isUnlocked)}}
-				<button data-action="reveal">
+				<button class="dialog-button" data-action="reveal">
 					<i class="fa-solid fa-eye"></i>
 					{{localize "SIMOC.Reveal"}}
 				</button>

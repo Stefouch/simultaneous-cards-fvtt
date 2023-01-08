@@ -338,7 +338,7 @@ export default class CardChooser extends Application {
       label: game.i18n.localize('SIMOC.Start'),
       options: {
         classes: [MODULE_ID, game.system.id, 'dialog', 'participants-config'],
-        width: 500,
+        width: 600,
       },
     });
 
