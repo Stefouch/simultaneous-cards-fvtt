@@ -14,17 +14,19 @@
 			<i class="fa-regular fa-circle-info" data-tooltip="{{localize "SIMOC.CardsHelpTooltip"}}" data-tooltip-direction="UP"></i>
 		</h4>
 		{{#each participants}}
-			<label class="participant-info">
-				<input type="checkbox" id="{{id}}.checked" {{checked checked}}/>
-				<img class="avatar" src="{{img}}"/>
-				<span>{{name}}</span>
-			</label>
-			<select id="{{id}}.user">
-				{{selectOptions ../users selected=user.id localize=false}}
-			</select>
-			<select id="{{id}}.stack">
-				{{selectOptions ../stacks selected=../defaultStackId localize=false}}
-			</select>
+			<div class="row-wrapper">
+				<label class="participant-info">
+					<input type="checkbox" id="{{id}}.checked" {{checked checked}}/>
+					<img class="avatar" src="{{img}}"/>
+					<span>{{name}}</span>
+				</label>
+				<select id="{{id}}.user">
+					{{selectOptions ../users selected=user.id localize=false}}
+				</select>
+				<select id="{{id}}.stack">
+					{{selectOptions ../stacks selected=../defaultStackId localize=false}}
+				</select>
+			</div>
 		{{/each}}
 	</div>
 </form>
