@@ -150,21 +150,21 @@ function getTargetVersion(currentVersion, release) {
  * @async
  */
 async function changelog() {
-  await execa('npx', ['standard-version', '--skip.bump', '--skip.tag', '--skip.commit'], { stdio });
+  await execa('npx', ['standard-version', '--skip.bump', '--skip.tag', '--skip.commit', '--tag-prefix', ''], { stdio });
 }
 
 /**
- * Commits and pushes release to Github Upstream.
+ * Commits and pushes release to Github Origin.
  * @async
  */
 async function commitTagPush() {
   const { version } = packageJson;
-  const commitMsg = `chore(release): Release ${version}`;
+  const commitMsg = `chore(release): ${version}`;
   await execa('git', ['add', '-A'], { stdio });
   await execa('git', ['commit', '--message', commitMsg], { stdio });
-  await execa('git', ['tag', `v${version}`], { stdio });
-  await execa('git', ['push', 'upstream'], { stdio });
-  await execa('git', ['push', 'upstream', '--tag'], { stdio });
+  await execa('git', ['tag', `${version}`], { stdio });
+  await execa('git', ['push', 'origin'], { stdio });
+  await execa('git', ['push', 'origin', '--tag'], { stdio });
 }
 
 /* ------------------------------------------ */
