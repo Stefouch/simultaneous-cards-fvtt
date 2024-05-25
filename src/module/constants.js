@@ -10,4 +10,5 @@ export const SETTINGS_KEYS = {
   /** @type {'addControlButton'} */ ADD_CONTROL_BUTTON: 'addControlButton',
   /** @type {'sendRevealMessage'} */ SEND_REVEAL_MESSAGE: 'sendRevealMessage',
   /** @type {'whisperRevealMessage'} */ WHISPER_REVEAL_MESSAGE: 'whisperRevealMessage',
+  /** @type {'useActorArtMessage'} */ USE_ACTOR_ART_MESSAGE: 'useActorArtMessage',
 };

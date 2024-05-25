@@ -37,4 +37,12 @@ export function registerSystemSettings() {
     type: Boolean,
     default: true,
   });
+  game.settings.register(MODULE_ID, SETTINGS_KEYS.USE_ACTOR_ART_MESSAGE, {
+    name: 'SETTINGS.SIMOC.UseActorArtName',
+    hint: 'SETTINGS.SIMOC.UseActorArtHint',
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: false,
+  });  
 }

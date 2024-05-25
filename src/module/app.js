@@ -22,6 +22,7 @@ import { getTokenOwner } from '@utils/token-utils';
  * @typedef {Object} Participant
  * @property {string}        id      The token's ID (read-only)
  * @property {TokenDocument} token
+ * @property {string}        participantArt
  * @property {User}          user
  * @property {Cards}         stack
  * @property {boolean}       isOwner
@@ -133,9 +134,10 @@ export default class CardChooser extends Application {
     const user = game.users.get(data.user);
     const stack = game.cards.get(data.stack);
     const card = stack.cards.get(data.card);
+    const participantArt = (game.settings.get(MODULE_ID, SETTINGS_KEYS.USE_ACTOR_ART_MESSAGE) ? token.actor.img : token.texture.src)
     // const isOwner = game.user.id === user.id;
     return {
-      token, user, stack, card,
+      token, user, stack, card, participantArt,
       revealed: !!data.revealed,
       get id() { return this.token.id; },
       get isOwner() { return this.user.id === game.user.id; },
@@ -317,7 +319,7 @@ export default class CardChooser extends Application {
 
     const tokenParticipants = tokens.map(t => ({
       id: t.id,
-      img: t.texture.src,
+      img: (game.settings.get(MODULE_ID, SETTINGS_KEYS.USE_ACTOR_ART_MESSAGE) ? t.actor.img : t.texture.src) ,
       name: t.name,
       checked: selectedTokenIds.includes(t.id),
       user: getTokenOwner(t, true),
