@@ -40,3 +40,5 @@ SETTINGS.SIMOC.SendRevealMessageName: Send Reveal Message
 SETTINGS.SIMOC.SendRevealMessageHint: Send a message when a chosen card is revealed.
 SETTINGS.SIMOC.WhisperRevealMessageName: Whisper Messages
 SETTINGS.SIMOC.WhisperRevealMessageHint: When enabled, the reveal messages are sent (whispered) only to the participants.
+SETTINGS.SIMOC.UseActorArtName: Use Actor art instead of token
+SETTINGS.SIMOC.UseActorArtHint: If token art is animated it may pose problems displaying inside UI. Use Actor art instead.

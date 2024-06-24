@@ -1,7 +1,7 @@
 <div class="participants">
 	{{#each participants}}
 		<div class="participant" data-participant-id="{{token.id}}">
-			<img class="participant-avatar" src="{{token.texture.src}}"/>
+			<img class="participant-avatar" src="{{participantArt}}"/>
 			<h3 class="participant-name">{{token.name}}</h3>
 			<div class="card{{#unless card}} nocard{{/unless}}{{#if (and isOwner ../isUnlocked)}} clickable{{/if}}">
 				{{#if card}}
