@@ -11,23 +11,23 @@ import { getTokenOwner } from '@utils/token-utils';
 
 /**
  * @typedef {Object} ParticipantData
- * @property {string}   token
- * @property {string}   user
- * @property {string}   stack
- * @property {string}  [card]
+ * @property {string}   token   Token ID
+ * @property {string}   user    User ID
+ * @property {string}   stack   Cards stack ID
+ * @property {string}  [card]   Card ID
  * @property {boolean} [revealed=false]
  */
 
 /**
  * @typedef {Object} Participant
  * @property {string}        id      The token's ID (read-only)
- * @property {TokenDocument} token
- * @property {string}        participantArt
- * @property {User}          user
- * @property {Cards}         stack
+ * @property {TokenDocument} token   TokenDocument
+ * @property {string}        participantArt Path to participant's illustration
+ * @property {User}          user    User that manages this token
+ * @property {Cards}         stack   The stack of Cards from where to draw cards for this token
  * @property {boolean}       isOwner
- * @property {boolean}      [revealed=false]
- * @property {Card}         [card]
+ * @property {boolean}      [revealed=false] Whether the card is revealed
+ * @property {Card}         [card]   The chosen card for this token
  */
 
 /**
@@ -88,6 +88,7 @@ export default class CardChooser extends Application {
       /** @type {'update'} */ update: 'update',
       /** @type {'validate'} */ validate: 'validate',
       /** @type {'reveal'} */ reveal: 'reveal',
+      /** @type {'restart'} */ restart: 'restart',
       /** @type {'close'} */ close: 'close',
     };
   }
@@ -111,6 +112,10 @@ export default class CardChooser extends Application {
   /*  Data Preparation                          */
   /* ------------------------------------------ */
 
+  /**
+   * Creates the data used by the renderTemplate for the Application.
+   * @returns {Object}
+   */
   getData() {
     const data = {
       participants: this.participants.contents,
@@ -126,6 +131,7 @@ export default class CardChooser extends Application {
   /* ------------------------------------------ */
 
   /**
+   * Creates a Participant object from ParticipantData (IDs).
    * @param {ParticipantData} data
    * @returns {Participant}
    */
@@ -134,7 +140,11 @@ export default class CardChooser extends Application {
     const user = game.users.get(data.user);
     const stack = game.cards.get(data.stack);
     const card = stack.cards.get(data.card);
-    const participantArt = (game.settings.get(MODULE_ID, SETTINGS_KEYS.USE_ACTOR_ART_MESSAGE) ? token.actor.img : token.texture.src)
+    const participantArt = (
+      game.settings.get(MODULE_ID, SETTINGS_KEYS.USE_ACTOR_ART_MESSAGE)
+        ? token.actor.img
+        : token.texture.src
+    );
     // const isOwner = game.user.id === user.id;
     return {
       token, user, stack, card, participantArt,
@@ -170,7 +180,7 @@ export default class CardChooser extends Application {
 
     if (!card) return;
     if (this.validated) return;
-    this.constructor.sendUpdate(id, { card: card.id });
+    this.constructor.emitUpdateParticipant(id, { card: card.id });
     this.updateParticipant(id, { card: card.id });
   }
 
@@ -181,14 +191,15 @@ export default class CardChooser extends Application {
       case 'reveal': return this._onRevealAction(event);
       case 'reveal-all': return this._onRevealAllAction();
       case 'validate': return this._onValidateAction();
+      case 'restart': return this._onRestartAction();
       case 'close': return this.close({ forceClose: true });
     }
   }
 
   _onRevealAction(event) {
-    const id = event.currentTarget. closest('.participant').dataset.participantId;
+    const id = event.currentTarget.closest('.participant').dataset.participantId;
     if (this.participants.get(id).revealed) return;
-    this.constructor.sendReveal(id);
+    this.constructor.emitRevealParticipant(id);
     this.updateParticipant(id, { revealed: true });
     if (game.settings.get(MODULE_ID, SETTINGS_KEYS.SEND_REVEAL_MESSAGE)) {
       this.createMessage(id);
@@ -198,7 +209,7 @@ export default class CardChooser extends Application {
   _onRevealAllAction() {
     for (const p of this.data.participants) {
       if (!p.revealed) {
-        this.constructor.sendReveal(p.token);
+        this.constructor.emitRevealParticipant(p.token);
         p.revealed = true;
         if (game.settings.get(MODULE_ID, SETTINGS_KEYS.SEND_REVEAL_MESSAGE)) {
           this.createMessage(p.token);
@@ -210,8 +221,14 @@ export default class CardChooser extends Application {
 
   _onValidateAction() {
     if (this.validated) return;
-    this.constructor.validateInstance();
+    this.constructor.emitValidateInstance();
     this.data.validated = true;
+    this.render(true);
+  }
+
+  _onRestartAction() {
+    this.constructor.emitRestartInstance();
+    this.resetParticipants();
     this.render(true);
   }
 
@@ -230,6 +247,21 @@ export default class CardChooser extends Application {
     for (const [k, v] of Object.entries(updateData)) {
       participant[k] = v;
     }
+    return this.render(true);
+  }
+
+  /* ------------------------------------------ */
+
+  /**
+   * Resets all cards for all participants.
+   * @returns {this}
+   */
+  resetParticipants() {
+    for (const p of this.data.participants) {
+      p.card = null;
+      p.revealed = false;
+    }
+    this.data.validated = false;
     return this.render(true);
   }
 
@@ -299,7 +331,7 @@ export default class CardChooser extends Application {
       return;
     }
 
-    this.startInstance(participants);
+    this.emitStartInstance(participants);
 
     return new this({ participants }).render(true);
   }
@@ -319,7 +351,7 @@ export default class CardChooser extends Application {
 
     const tokenParticipants = tokens.map(t => ({
       id: t.id,
-      img: (game.settings.get(MODULE_ID, SETTINGS_KEYS.USE_ACTOR_ART_MESSAGE) ? t.actor.img : t.texture.src) ,
+      img: (game.settings.get(MODULE_ID, SETTINGS_KEYS.USE_ACTOR_ART_MESSAGE) ? t.actor.img : t.texture.src),
       name: t.name,
       checked: selectedTokenIds.includes(t.id),
       user: getTokenOwner(t, true),
@@ -379,7 +411,7 @@ export default class CardChooser extends Application {
       if (!toClose) return;
     }
     if (game.user.isGM) {
-      this.constructor.closeInstance();
+      this.constructor.emitCloseInstance();
       this.constructor._instance = null;
     }
     return super.close(options);
@@ -399,33 +431,39 @@ export default class CardChooser extends Application {
     return game.socket.emit(this.socket, { ...data, event });
   }
 
-  static startInstance(participants) {
+  static emitStartInstance(participants) {
     return this.emit(this.socketEvents.start, {
       gm: game.user.name,
       participants,
     });
   }
 
-  static closeInstance() {
+  static emitCloseInstance() {
     return this.emit(this.socketEvents.close, {
       gm: game.user.name,
     });
   }
 
-  static validateInstance() {
+  static emitRestartInstance() {
+    return this.emit(this.socketEvents.restart, {
+      gm: game.user.name,
+    });
+  }
+
+  static emitValidateInstance() {
     return this.emit(this.socketEvents.validate, {
       gm: game.user.name,
     });
   }
 
-  static sendUpdate(participantId, updateData) {
+  static emitUpdateParticipant(participantId, updateData) {
     return this.emit(this.socketEvents.update, {
       participant: participantId,
       updateData,
     });
   }
 
-  static sendReveal(participantId) {
+  static emitRevealParticipant(participantId) {
     return this.emit(this.socketEvents.reveal, {
       participant: participantId,
       by: game.user.name,
@@ -483,6 +521,15 @@ export default class CardChooser extends Application {
             name: `<b>${data.by}</b>`,
             participant: `<b>${p.token.name}</b>`,
             card:`<b>${p.card.name}</b>`,
+          });
+          break;
+        }
+        // Restart
+        case this.socketEvents.restart: {
+          if (!this._instance) return;
+          this._instance.resetParticipants();
+          message = game.i18n.format('SIMOC.Notif.RestartInstance', {
+            name: `<b>${data.gm}</b>`,
           });
           break;
         }

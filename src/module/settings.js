@@ -44,5 +44,5 @@ export function registerSystemSettings() {
     config: true,
     type: Boolean,
     default: false,
-  });  
+  });
 }

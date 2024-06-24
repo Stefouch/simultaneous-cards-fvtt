@@ -12,6 +12,7 @@ SIMOC.ParticipantHelpTooltip: >-
   Tick the checkbox to add the token as a participant.
   (Selected tokens on the scene are pre-checked.)
 SIMOC.PrepareParticipants: Prepare Participants
+SIMOC.Restart: Restart
 SIMOC.Reveal: Reveal
 SIMOC.RevealAll: Reveal All
 SIMOC.Start: Start
@@ -32,6 +33,7 @@ SIMOC.Notif.StackError: >-
 SIMOC.Notif.StartInstance: '{name} started a new card choice instance!'
 SIMOC.Notif.UpdateInstance: '{name} chose a card for {participant}!'
 SIMOC.Notif.ValidateInstance: '{name} validated all choices!'
+SIMOC.Notif.RestartInstance: '{name} restarted the card choice instance!'
 SIMOC.Notif.CloseInstance: '{name} ended the card choice instance!'
 SIMOC.Notif.RevealCard: '{name} revealed the {card} card for {participant}!'
 SETTINGS.SIMOC.AddControlButtonName: Control Button
