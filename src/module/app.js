@@ -1,4 +1,4 @@
-import { MODULE_ID, MODULE_NAME, SETTINGS_KEYS } from './constants';
+import { HOOKS_KEYS, MODULE_ID, MODULE_NAME, SETTINGS_KEYS } from './constants';
 import { SIMOC } from './config';
 import { chooseCard, chooseCardsStack, getCardsStack } from '@utils/cards-util';
 import { getTokenOwner } from '@utils/token-utils';
@@ -204,6 +204,7 @@ export default class CardChooser extends Application {
     if (game.settings.get(MODULE_ID, SETTINGS_KEYS.SEND_REVEAL_MESSAGE)) {
       this.createMessage(id);
     }
+    Hooks.callAll(HOOKS_KEYS.REVEAL, id);
   }
 
   _onRevealAllAction() {
@@ -214,6 +215,7 @@ export default class CardChooser extends Application {
         if (game.settings.get(MODULE_ID, SETTINGS_KEYS.SEND_REVEAL_MESSAGE)) {
           this.createMessage(p.token);
         }
+        Hooks.callAll(HOOKS_KEYS.REVEAL, p.token);
       }
     }
     this.render(true);
@@ -229,7 +231,6 @@ export default class CardChooser extends Application {
   _onRestartAction() {
     this.constructor.emitRestartInstance();
     this.resetParticipants();
-    this.render(true);
   }
 
   /* ------------------------------------------ */
@@ -522,6 +523,7 @@ export default class CardChooser extends Application {
             participant: `<b>${p.token.name}</b>`,
             card:`<b>${p.card.name}</b>`,
           });
+          Hooks.callAll(HOOKS_KEYS.REVEAL, data.participant);
           break;
         }
         // Restart

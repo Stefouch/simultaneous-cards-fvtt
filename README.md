@@ -31,6 +31,26 @@ game.simoc.app.create('abcd1234');
 game.simoc.app.create(['abcd1234', 'efgh5678']);
 ```
 
+### Access the participants' data
+
+```js
+/** @type {Collection} */
+const participants = game.simoc.instance?.participants
+```
+
+### Trigger post-reveal macros
+
+You can trigger post-reveal macros with listening to this hook:
+
+```js
+Hooks.on('simultaneousCardsReveal', id => {
+  const participant = game.simoc.instance.participants.get(id);
+  const card = participant.card;
+  console.log(participant);
+  // Your code...
+});
+```
+
 # Contributing
 
 ## Setup
