@@ -29,6 +29,29 @@ game.simoc.app.create('abcd1234');
 
 // You can add more than one ID or name.
 game.simoc.app.create(['abcd1234', 'efgh5678']);
+
+// Get the instance and use its methods.
+game.simoc.instance;
+```
+
+### Access the participants' data
+
+```js
+/** @type {Collection} */
+const participants = game.simoc.instance?.participants
+```
+
+### Trigger post-reveal macros
+
+You can trigger post-reveal macros by listening to this hook:
+
+```js
+Hooks.on('simultaneousCardsReveal', id => {
+  const participant = game.simoc.instance.participants.get(id);
+  const card = participant.card;
+  console.log(participant);
+  // Your code...
+});
 ```
 
 # Contributing

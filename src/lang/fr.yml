@@ -1,4 +1,6 @@
 SIMOC.AppName: Cartes Simultanées
+SIMOC.Auto: Auto
+SIMOC.AutoHelpTooltip: Choisir automatiquement une carte au hasard pour ce participant.
 SIMOC.ChooseStack: Choisir le tas de cartes à utiliser par défaut
 SIMOC.ChooseCard: Choisir une Carte
 SIMOC.ChooseCardHint: Choisissez une carte pour le participant.
@@ -12,6 +14,7 @@ SIMOC.ParticipantHelpTooltip: >-
   Cochez la case pour ajouter le jeton comme participant.
   (Les jetons sélectionnés sur la scène sont pré-cochés.)
 SIMOC.PrepareParticipants: Préparation des Participants
+SIMIC.Restart: Recommencer
 SIMOC.Reveal: Révéler
 SIMOC.RevealAll: Tout révéler
 SIMOC.Start: Démarrer
@@ -32,6 +35,7 @@ SIMOC.Notif.StackError: >-
 SIMOC.Notif.StartInstance: '{name} a démarré une nouvelle instance de choix de cartes !'
 SIMOC.Notif.UpdateInstance: '{name} a choisi une carte pour {participant} !'
 SIMOC.Notif.ValidateInstance: '{name} a validé tous les choix !'
+SIMOC.Notif.RestartInstance: '{name} a redémarré l''instance de choix de carte !'
 SIMOC.Notif.CloseInstance: '{name} a clôturé l''instance de choix de carte !'
 SIMOC.Notif.RevealCard: '{name} a révélé la carte {card} pour {participant} !'
 SETTINGS.SIMOC.AddControlButtonName: Bouton de contrôle
@@ -40,3 +44,5 @@ SETTINGS.SIMOC.SendRevealMessageName: Message de révélation
 SETTINGS.SIMOC.SendRevealMessageHint: Envoyer un message lorsqu'une carte choisie est révélée.
 SETTINGS.SIMOC.WhisperRevealMessageName: Chuchoter
 SETTINGS.SIMOC.WhisperRevealMessageHint: Lorsqu'activé, les messages de révélation sont envoyés (chuchotés) seulement aux participants.
+SETTINGS.SIMOC.UseActorArtName: Utiliser l'illustration de l'Acteur en lieue du jeton
+SETTINGS.SIMOC.UseActorArtHint: Si l'illustration du jeton est animée elle pourrait poser problème. Utilise l'illustration de l'Acteur à la place.

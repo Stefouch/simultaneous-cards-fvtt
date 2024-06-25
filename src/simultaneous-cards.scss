@@ -139,7 +139,7 @@ $card-height: $card-width * 1.5;
 .simultaneous-cards.participants-config {
   .participants {
     display: grid;
-    grid-template-columns: auto 20% 30%;
+    grid-template-columns: auto 20% 30% 10%;
     align-items: center;
     gap: 4px;
     margin-bottom: 12px;

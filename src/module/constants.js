@@ -12,3 +12,8 @@ export const SETTINGS_KEYS = {
   /** @type {'whisperRevealMessage'} */ WHISPER_REVEAL_MESSAGE: 'whisperRevealMessage',
   /** @type {'useActorArtMessage'} */ USE_ACTOR_ART_MESSAGE: 'useActorArtMessage',
 };
+
+/** @enum {string} */
+export const HOOKS_KEYS = {
+  /** @type {'simultaneousCardsReveal'} */ REVEAL: 'simultaneousCardsReveal',
+};

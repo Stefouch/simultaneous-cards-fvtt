@@ -13,6 +13,10 @@
 			{{localize "SIMOC.Cards"}}
 			<i class="fa-regular fa-circle-info" data-tooltip="{{localize "SIMOC.CardsHelpTooltip"}}" data-tooltip-direction="UP"></i>
 		</h4>
+		<h4>
+			{{localize "SIMOC.Auto"}}
+			<i class="fa-regular fa-circle-info" data-tooltip="{{localize "SIMOC.AutoHelpTooltip"}}" data-tooltip-direction="UP"></i>
+		</h4>
 		{{#each participants}}
 			<div class="row-wrapper">
 				<label class="participant-info">
@@ -26,6 +30,7 @@
 				<select id="{{id}}.stack">
 					{{selectOptions ../stacks selected=../defaultStackId localize=false}}
 				</select>
+				<input type="checkbox" id="{{id}}.auto" {{checked false}}/>
 			</div>
 		{{/each}}
 	</div>
