@@ -1,4 +1,6 @@
 SIMOC.AppName: Simultaneous Cards
+SIMOC.Auto: Auto
+SIMOC.AutoHelpTooltip: Whether to choose automatically a card at random for this participant.
 SIMOC.ChooseStack: Choose the Default Cards Stack to Use
 SIMOC.ChooseCard: Choose a Card
 SIMOC.ChooseCardHint: Choose the card for the participant.

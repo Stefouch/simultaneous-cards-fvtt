@@ -21,7 +21,6 @@ Hooks.on('ready', () => {
 });
 
 Hooks.on('getSceneControlButtons', controls => {
-  console.warn(controls);
   if (game.user.isGM && game.settings.get(MODULE_ID, SETTINGS_KEYS.ADD_CONTROL_BUTTON)) {
     const tokenControls = controls.find(c => c.name === 'token');
     tokenControls.tools.push({

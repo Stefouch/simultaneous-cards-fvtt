@@ -15,7 +15,8 @@ import { getTokenOwner } from '@utils/token-utils';
  * @property {string}   user    User ID
  * @property {string}   stack   Cards stack ID
  * @property {string}  [card]   Card ID
- * @property {boolean} [revealed=false]
+ * @property {boolean} [revealed=false] Whether the participant's card is revealed
+ * @property {boolean} [auto=false]     Whether the card for the participant is chosen automatically at random
  */
 
 /**
@@ -25,9 +26,10 @@ import { getTokenOwner } from '@utils/token-utils';
  * @property {string}        participantArt Path to participant's illustration
  * @property {User}          user    User that manages this token
  * @property {Cards}         stack   The stack of Cards from where to draw cards for this token
- * @property {boolean}       isOwner
- * @property {boolean}      [revealed=false] Whether the card is revealed
+ * @property {boolean}       isOwner Whether the user is the owner of the participant
  * @property {Card}         [card]   The chosen card for this token
+ * @property {boolean}      [revealed=false] Whether the participant's card is revealed
+ * @property {boolean}      [auto=false]     Whether the card for the participant is chosen automatically at random
  */
 
 /**
@@ -182,6 +184,7 @@ export default class CardChooser extends Application {
     if (this.validated) return;
     this.constructor.emitUpdateParticipant(id, { card: card.id });
     this.updateParticipant(id, { card: card.id });
+    this.render();
   }
 
   _onButtonAction(event) {
@@ -205,6 +208,7 @@ export default class CardChooser extends Application {
       this.createMessage(id);
     }
     Hooks.callAll(HOOKS_KEYS.REVEAL, id);
+    this.render();
   }
 
   _onRevealAllAction() {
@@ -218,19 +222,30 @@ export default class CardChooser extends Application {
         Hooks.callAll(HOOKS_KEYS.REVEAL, p.token);
       }
     }
-    this.render(true);
+    this.render();
   }
 
   _onValidateAction() {
     if (this.validated) return;
     this.constructor.emitValidateInstance();
     this.data.validated = true;
-    this.render(true);
+    this.render();
   }
 
   _onRestartAction() {
     this.constructor.emitRestartInstance();
-    this.resetParticipants();
+    this.resetParticipants(false);
+
+    // Pre-draw cards for participants set to automatic
+    for (const p of this.data.participants) {
+      if (p.auto) {
+        const stack = game.cards.get(p.stack).cards.contents;
+        const card = stack[Math.floor(Math.random() * stack.length)];
+        this.constructor.emitUpdateParticipant(p.token, { card: card.id });
+        this.updateParticipant(p.token, { card: card.id }, false);
+      }
+    }
+    this.render();
   }
 
   /* ------------------------------------------ */
@@ -248,7 +263,7 @@ export default class CardChooser extends Application {
     for (const [k, v] of Object.entries(updateData)) {
       participant[k] = v;
     }
-    return this.render(true);
+    return this;
   }
 
   /* ------------------------------------------ */
@@ -263,7 +278,7 @@ export default class CardChooser extends Application {
       p.revealed = false;
     }
     this.data.validated = false;
-    return this.render(true);
+    return this;
   }
 
   /* ------------------------------------------ */
@@ -332,6 +347,15 @@ export default class CardChooser extends Application {
       return;
     }
 
+    // Pre-draw cards for participants set to automatic
+    for (const p of participants) {
+      if (p.auto) {
+        const stack = game.cards.get(p.stack).cards.contents;
+        const card = stack[Math.floor(Math.random() * stack.length)];
+        p.card = card.id;
+      }
+    }
+
     this.emitStartInstance(participants);
 
     return new this({ participants }).render(true);
@@ -386,6 +410,7 @@ export default class CardChooser extends Application {
           token: id,
           user: form[`${id}.user`].value,
           stack: form[`${id}.stack`].value,
+          auto: form[`${id}.auto`].checked,
         });
       }
     }
@@ -518,6 +543,7 @@ export default class CardChooser extends Application {
           const p = this._instance.participants.get(data.participant);
           if (p.revealed) return;
           this._instance.updateParticipant(data.participant, { revealed: true });
+          this._instance.render(true);
           message = game.i18n.format('SIMOC.Notif.RevealCard', {
             name: `<b>${data.by}</b>`,
             participant: `<b>${p.token.name}</b>`,
@@ -530,6 +556,7 @@ export default class CardChooser extends Application {
         case this.socketEvents.restart: {
           if (!this._instance) return;
           this._instance.resetParticipants();
+          this._instance.render(true);
           message = game.i18n.format('SIMOC.Notif.RestartInstance', {
             name: `<b>${data.gm}</b>`,
           });

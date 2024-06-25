@@ -1,4 +1,6 @@
 SIMOC.AppName: Cartes Simultanées
+SIMOC.Auto: Auto
+SIMOC.AutoHelpTooltip: Choisir automatiquement une carte au hasard pour ce participant.
 SIMOC.ChooseStack: Choisir le tas de cartes à utiliser par défaut
 SIMOC.ChooseCard: Choisir une Carte
 SIMOC.ChooseCardHint: Choisissez une carte pour le participant.
