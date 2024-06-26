@@ -1,4 +1,4 @@
-import { MODULE_ID, MODULE_NAME, SETTINGS_KEYS } from '@module/constants';
+import { HOOKS_KEYS, MODULE_ID, MODULE_NAME, SETTINGS_KEYS } from '@module/constants';
 import { SIMOC } from '@module/config';
 import CardChooser from '@module/app';
 import { registerSystemSettings } from '@module/settings';
@@ -16,7 +16,7 @@ Hooks.on('init', () => {
 
 Hooks.on('ready', () => {
   console.log(`${MODULE_NAME} | Ready!`);
-  Hooks.callAll('simocReady', CONFIG.SIMOC);
+  Hooks.callAll(HOOKS_KEYS.READY, CONFIG.SIMOC);
   CardChooser.listen();
 });
 
