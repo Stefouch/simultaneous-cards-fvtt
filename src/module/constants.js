@@ -15,5 +15,6 @@ export const SETTINGS_KEYS = {
 
 /** @enum {string} */
 export const HOOKS_KEYS = {
+  /** @type {'simultaneousCardsReady'} */ READY: 'simultaneousCardsReady',
   /** @type {'simultaneousCardsReveal'} */ REVEAL: 'simultaneousCardsReveal',
 };
