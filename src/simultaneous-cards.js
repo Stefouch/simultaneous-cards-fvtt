@@ -22,13 +22,13 @@ Hooks.on('ready', () => {
 
 Hooks.on('getSceneControlButtons', controls => {
   if (game.user.isGM && game.settings.get(MODULE_ID, SETTINGS_KEYS.ADD_CONTROL_BUTTON)) {
-    const tokenControls = controls.find(c => c.name === 'token');
-    tokenControls.tools.push({
-      name: `${MODULE_ID}.create`,
+    const buttonId = `${MODULE_ID}.create`;
+    controls.tokens.tools[buttonId] = {
+      name: buttonId,
       icon: 'fa-solid fa-cards',
       title: 'SIMOC.AppName',
-      onClick: () => CardChooser.create(),
+      onChange: () => CardChooser.create(),
       button: true,
-    });
+    };
   }
 });
