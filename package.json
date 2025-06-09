@@ -1,6 +1,6 @@
 {
   "name": "simultaneous-cards-fvtt",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "type": "module",
   "description": "A system-agnostic Foundry module for the simultaneous choice of cards between all the players and the GM",
   "scripts": {
