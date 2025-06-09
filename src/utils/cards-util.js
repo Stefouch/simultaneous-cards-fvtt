@@ -25,7 +25,7 @@ export function getCardsStack(idOrName) {
 export async function chooseCard(cards, options = {}) {
   if (cards.length <= 1) return cards[0];
 
-  const content = await renderTemplate(SIMOC.templates.cardChooserDialog, {
+  const content = await foundry.applications.handlebars.renderTemplate(SIMOC.templates.cardChooserDialog, {
     cards,
     description: options.description,
     config: SIMOC,
