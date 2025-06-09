@@ -60,6 +60,7 @@ export default class CardChooser extends Application {
       template: SIMOC.templates.app,
       classes: [MODULE_ID, game.system.id, 'sheet'],
       id: `${MODULE_ID}-app`,
+      resizable: true,
       // width: 720,
       // height: 550,
     });
@@ -292,7 +293,7 @@ export default class CardChooser extends Application {
     const p = this.participants.get(participantId);
     const card = p.card;
     const chatData = {
-      content: await renderTemplate(SIMOC.templates.cardMessage, { card }),
+      content: await foundry.applications.handlebars.renderTemplate(SIMOC.templates.cardMessage, { card }),
       flavor: game.i18n.format('SIMOC.Message.Flavor', {
         name: p.user.name,
       }),
@@ -384,7 +385,7 @@ export default class CardChooser extends Application {
 
     const form = await Dialog.prompt({
       title: `${game.i18n.localize('SIMOC.AppName')}: ${game.i18n.localize('SIMOC.PrepareParticipants')}`,
-      content: await renderTemplate(SIMOC.templates.participantsConfigDialog, {
+      content: await foundry.applications.handlebars.renderTemplate(SIMOC.templates.participantsConfigDialog, {
         participants: tokenParticipants,
         users: game.users
           .filter(u => u.active)

@@ -4,9 +4,9 @@
   "description": "A system-agnostic module for the simultaneous choice of cards between all the players and the GM",
   "version": "2.0.0",
   "compatibility": {
-    "minimum": 10,
-    "verified": "12.327",
-    "maximum": 12
+    "minimum": 13,
+    "verified": "13.345",
+    "maximum": 13
   },
   "authors": [
     {
@@ -15,7 +15,6 @@
       "url": "https://stefouch.be"
     }
   ],
-  "localization": "",
   "bugs": "https://github.com/Stefouch/simultaneous-cards-fvtt/issues",
   "media": [],
   "scripts": [],
