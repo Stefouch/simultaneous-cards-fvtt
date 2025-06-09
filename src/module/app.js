@@ -60,6 +60,7 @@ export default class CardChooser extends Application {
       template: SIMOC.templates.app,
       classes: [MODULE_ID, game.system.id, 'sheet'],
       id: `${MODULE_ID}-app`,
+      resizable: true,
       // width: 720,
       // height: 550,
     });
