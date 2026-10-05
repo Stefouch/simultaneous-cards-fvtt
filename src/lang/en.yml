@@ -8,6 +8,8 @@ SIMOC.Cards: Cards
 SIMOC.CardsHelpTooltip: Select the cards stack to use for the participant.
 SIMOC.Close: Quit
 SIMOC.CloseConfirm: Are you sure?
+SIMOC.Confirm: Confirm
+SIMOC.Cancel: Cancel
 SIMOC.Participant: Participant
 SIMOC.ParticipantHelpTooltip: >-
   List of tokens.

@@ -1,68 +1,70 @@
-<div class="participants">
-	{{#each participants}}
-		<div class="participant" data-participant-id="{{token.id}}">
-			<img class="participant-avatar" src="{{participantArt}}"/>
-			<h3 class="participant-name">{{token.name}}</h3>
-			<div class="card{{#unless card}} nocard{{/unless}}{{#if (and isOwner ../isUnlocked)}} clickable{{/if}}">
-				{{#if card}}
-					{{#if (or isOwner revealed)}}
-						<img src="{{card.img}}"/>
+<div class="card-chooser-app">
+	<div class="participants">
+		{{#each participants}}
+			<div class="participant" data-participant-id="{{token.id}}">
+				<img class="participant-avatar" src="{{participantArt}}"/>
+				<h3 class="participant-name">{{token.name}}</h3>
+				<div class="card{{#unless card}} nocard{{/unless}}{{#if (and isOwner ../isUnlocked)}} clickable{{/if}}">
+					{{#if card}}
+						{{#if (or isOwner revealed)}}
+							<img src="{{card.img}}"/>
+						{{else}}
+							<img src="{{card.back.img}}"/>
+						{{/if}}
+					{{else if isOwner}}
+						<span class="active">
+							<i class="{{@root.config.icons.drawcard}}"></i>
+						</span>
 					{{else}}
-						<img src="{{card.back.img}}"/>
+						<span class="inactive">
+							<i class="{{@root.config.icons.nocard}}"></i>
+						</span>
 					{{/if}}
-				{{else if isOwner}}
-					<span class="active">
-						<i class="{{@root.config.icons.drawcard}}"></i>
-					</span>
-				{{else}}
-					<span class="inactive">
-						<i class="{{@root.config.icons.nocard}}"></i>
-					</span>
+				</div>
+				{{#if (or isOwner ../isGM)}}
+				{{#unless (or revealed ../isUnlocked)}}
+					<button class="dialog-button" data-action="reveal">
+						<i class="fa-solid fa-eye"></i>
+						{{localize "SIMOC.Reveal"}}
+					</button>
+				{{/unless}}
 				{{/if}}
 			</div>
-			{{#if (or isOwner ../isGM)}}
-			{{#unless (or revealed ../isUnlocked)}}
-				<button class="dialog-button" data-action="reveal">
-					<i class="fa-solid fa-eye"></i>
-					{{localize "SIMOC.Reveal"}}
-				</button>
-			{{/unless}}
-			{{/if}}
-		</div>
-	{{/each}}
-</div>
+		{{/each}}
+	</div>
 
-{{#if isUnlocked}}
-<div class="messages">
-	{{#if isReady}}
-		<span>{{localize "SIMOC.ReadyForValidation"}}</span>
-	{{else}}
-		<span>{{localize "SIMOC.WaitForPlayers"}}</span>
+	{{#if isUnlocked}}
+	<div class="messages">
+		{{#if isReady}}
+			<span>{{localize "SIMOC.ReadyForValidation"}}</span>
+		{{else}}
+			<span>{{localize "SIMOC.WaitForPlayers"}}</span>
+		{{/if}}
+	</div>
+	{{/if}}
+
+	{{#if isGM}}
+		<footer class="sheet-footer">
+			{{#if isUnlocked}}
+				<button class="dialog-button{{#unless isReady}} disabled{{/unless}}" data-action="validate"{{#unless isReady}} disabled{{/unless}}>
+					<i class="fa-solid fa-check"></i>
+					{{localize "SIMOC.Validate"}}
+				</button>
+			{{else unless isAllRevealed}}
+				<button class="dialog-button" data-action="reveal-all">
+					<i class="fa-solid fa-arrows-to-eye"></i>
+					{{localize "SIMOC.RevealAll"}}
+				</button>
+			{{else}}
+				<button class="dialog-button" data-action="restart">
+					<i class="fa-solid fa-recycle"></i>
+					{{localize "SIMOC.Restart"}}
+				</button>
+				<button class="dialog-button" data-action="close">
+					<i class="fa-solid fa-person-to-door"></i>
+					{{localize "SIMOC.Close"}}
+				</button>
+			{{/if}}
+		</footer>
 	{{/if}}
 </div>
-{{/if}}
-
-{{#if isGM}}
-	<footer class="sheet-footer">
-		{{#if isUnlocked}}
-			<button class="dialog-button{{#unless isReady}} disabled{{/unless}}" data-action="validate"{{#unless isReady}} disabled{{/unless}}>
-				<i class="fa-solid fa-check"></i>
-				{{localize "SIMOC.Validate"}}
-			</button>
-		{{else unless isAllRevealed}}
-			<button class="dialog-button" data-action="reveal-all">
-				<i class="fa-solid fa-arrows-to-eye"></i>
-				{{localize "SIMOC.RevealAll"}}
-			</button>
-		{{else}}
-			<button class="dialog-button" data-action="restart">
-				<i class="fa-solid fa-recycle"></i>
-				{{localize "SIMOC.Restart"}}
-			</button>
-			<button class="dialog-button" data-action="close">
-				<i class="fa-solid fa-person-to-door"></i>
-				{{localize "SIMOC.Close"}}
-			</button>
-		{{/if}}
-	</footer>
-{{/if}}

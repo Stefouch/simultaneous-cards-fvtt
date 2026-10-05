@@ -1,0 +1,113 @@
+/* ------------------------------------------ */
+/*  BASE APP DIALOG                           */
+/*   Refactored by: Damián Fraustro           */
+/*    https://fraustro-design.com             */
+/* ------------------------------------------ */
+
+$card-width: 150px;
+$card-height: $card-width * 1.5;
+
+.simultaneous-cards.sheet .card-chooser-app {
+  .participants {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacer-16);
+  }
+
+  .participant {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 4px;
+    width: $card-width;
+  }
+
+  .participant-name {
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    min-width: 1px;
+    font-size: revert;
+    font-family: var(--font-primary);
+    line-height: unset;
+    margin: 0;
+  }
+
+  .participant-avatar {
+    width: $card-width * 0.5;
+    height: $card-width * 0.5;
+    border: none;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: $card-width;
+    height: $card-height;
+    border-radius: 10px;
+
+    &.nocard {
+      background-color: var(--color-text-secondary);
+      border: 2px solid var(--color-text-primary);
+    }
+
+    span {
+      font-size: var(--font-size-48);
+
+      &.active {
+        color: contrast-color(var(--color-text-secondary));
+      }
+
+      &.inactive {
+        color: var(--color-dark-5);
+      }
+    }
+
+    &.clickable {
+      cursor: pointer;
+    }
+
+    &.clickable:hover {
+      border-color: var(--color-warm-1);
+      img {
+        box-shadow: 0 0 12px 4px var(--color-warm-1);
+      }
+      span {
+        color: var(--color-warm-1);
+      }
+    }
+  }
+
+  .messages {
+    color: #fff;
+    background-color: var(--color-text-secondary);
+    border: 1px solid var(--color-text-primary);
+    border-radius: 4px;
+    padding: 8px;
+  }
+
+  .messages,
+  .sheet-footer {
+    margin-top: 12px;
+  }
+
+  .sheet-footer {
+    display: flex;
+    gap: 8px;
+  }
+
+  .dialog-button {
+    width: 100%;
+
+    &.disabled i {
+      display: none;
+    }
+  }
+}

@@ -32,21 +32,29 @@ import { getTokenOwner } from '@utils/token-utils';
  * @property {boolean}      [auto=false]     Whether the card for the participant is chosen automatically at random
  */
 
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+
 /**
- * @extends {Application}
+ * @extends {ApplicationV2}
  */
-export default class CardChooser extends Application {
+export default class CardChooser extends HandlebarsApplicationMixin(ApplicationV2) {
   /**
    * @param {CardChooserAppData} data
    * @param {ApplicationOptions} options
    */
-  constructor(data, options) {
-    super(options);
+  constructor(data, options = {}) {
+    super({
+      ...options,
+      classes: [...(options.classes ?? []), MODULE_ID, game.system.id, 'sheet'],
+    });
+
     this.data = data;
+
     if (this.constructor._instance) {
       ui.notifications.error('SIMOC.Notif.InstanceError', { localize: true });
       throw new Error(`${MODULE_NAME} | An instance already exists!`);
     }
+
     this.constructor._instance = this;
   }
 
@@ -54,17 +62,36 @@ export default class CardChooser extends Application {
   /*  Properties                                */
   /* ------------------------------------------ */
 
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
+  static DEFAULT_OPTIONS = {
+    id: `${MODULE_ID}-app`,
+    window: {
       title: 'SIMOC.AppName',
-      template: SIMOC.templates.app,
-      classes: [MODULE_ID, game.system.id, 'sheet'],
-      id: `${MODULE_ID}-app`,
       resizable: true,
-      // width: 720,
-      // height: 550,
-    });
-  }
+    },
+    actions: {
+      reveal: function (event, target) {
+        this._onRevealAction(event, target);
+      },
+      'reveal-all': function () {
+        this._onRevealAllAction();
+      },
+      validate: function (event, target) {
+        this._onValidateAction();
+      },
+      restart: function () {
+        this._onRestartAction();
+      },
+      close: function () {
+        this._onCloseAction();
+      },
+    },
+  };
+
+  static PARTS = {
+    main: {
+      template: SIMOC.templates.app,
+    },
+  };
 
   /* ------------------------------------------ */
 
@@ -116,11 +143,14 @@ export default class CardChooser extends Application {
   /* ------------------------------------------ */
 
   /**
-   * Creates the data used by the renderTemplate for the Application.
-   * @returns {Object}
+   * @param {ApplicationRenderContext} options
+   * @returns {Promise<Object>}
    */
-  getData() {
-    const data = {
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
+
+    return {
+      ...context,
       participants: this.participants.contents,
       isGM: game.user.isGM,
       isUnlocked: !this.validated,
@@ -128,7 +158,6 @@ export default class CardChooser extends Application {
       isAllRevealed: this.data.participants.every(p => p.revealed),
       config: SIMOC,
     };
-    return data;
   }
 
   /* ------------------------------------------ */
@@ -143,17 +172,23 @@ export default class CardChooser extends Application {
     const user = game.users.get(data.user);
     const stack = game.cards.get(data.stack);
     const card = stack.cards.get(data.card);
-    const participantArt = (
-      game.settings.get(MODULE_ID, SETTINGS_KEYS.USE_ACTOR_ART_MESSAGE)
-        ? token.actor.img
-        : token.texture.src
-    );
-    // const isOwner = game.user.id === user.id;
+    const participantArt = game.settings.get(MODULE_ID, SETTINGS_KEYS.USE_ACTOR_ART_MESSAGE)
+      ? token.actor.img
+      : token.texture.src;
+
     return {
-      token, user, stack, card, participantArt,
+      token,
+      user,
+      stack,
+      card,
+      participantArt,
       revealed: !!data.revealed,
-      get id() { return this.token.id; },
-      get isOwner() { return this.user.id === game.user.id; },
+      get id() {
+        return this.token.id;
+      },
+      get isOwner() {
+        return this.user.id === game.user.id;
+      },
     };
   }
 
@@ -161,12 +196,12 @@ export default class CardChooser extends Application {
   /*  Event Listeners                           */
   /* ------------------------------------------ */
 
-  /** @param {JQuery.<HTMLElement>} html */
-  activateListeners(html) {
-    super.activateListeners(html);
+  _onRender(context, options) {
+    super._onRender(context, options);
 
-    html.find('.card.clickable').on('click', this._onCardChoose.bind(this));
-    html.find('button[data-action]').on('click', this._onButtonAction.bind(this));
+    this.element.querySelectorAll('.card.clickable').forEach(element => {
+      element.addEventListener('click', event => this._onCardChoose(event));
+    });
   }
 
   async _onCardChoose(event) {
@@ -188,21 +223,11 @@ export default class CardChooser extends Application {
     this.render();
   }
 
-  _onButtonAction(event) {
-    event.preventDefault();
-    const btn = event.currentTarget;
-    switch (btn.dataset.action) {
-      case 'reveal': return this._onRevealAction(event);
-      case 'reveal-all': return this._onRevealAllAction();
-      case 'validate': return this._onValidateAction();
-      case 'restart': return this._onRestartAction();
-      case 'close': return this.close({ forceClose: true });
-    }
-  }
+  _onRevealAction(event, target) {
+    const id = target.closest('.participant').dataset.participantId;
 
-  _onRevealAction(event) {
-    const id = event.currentTarget.closest('.participant').dataset.participantId;
     if (this.participants.get(id).revealed) return;
+
     this.constructor.emitRevealParticipant(id);
     this.updateParticipant(id, { revealed: true });
     if (game.settings.get(MODULE_ID, SETTINGS_KEYS.SEND_REVEAL_MESSAGE)) {
@@ -247,6 +272,10 @@ export default class CardChooser extends Application {
       }
     }
     this.render();
+  }
+
+  _onCloseAction(event, target) {
+    return this.close({ forceClose: true });
   }
 
   /* ------------------------------------------ */
@@ -327,9 +356,7 @@ export default class CardChooser extends Application {
     }
     if (!Array.isArray(stackIds)) stackIds = [stackIds];
 
-    let stacks = stackIds
-      .map(id => getCardsStack(id))
-      .filter(stack => stack?.cards.size > 0);
+    let stacks = stackIds.map(id => getCardsStack(id)).filter(stack => stack?.cards.size > 0);
 
     if (!stacks.length) stacks = game.cards.filter(stack => stack.cards.size > 0);
     if (!stacks.length) {
@@ -377,41 +404,55 @@ export default class CardChooser extends Application {
 
     const tokenParticipants = tokens.map(t => ({
       id: t.id,
-      img: (game.settings.get(MODULE_ID, SETTINGS_KEYS.USE_ACTOR_ART_MESSAGE) ? t.actor.img : t.texture.src),
+      img: game.settings.get(MODULE_ID, SETTINGS_KEYS.USE_ACTOR_ART_MESSAGE) ? t.actor.img : t.texture.src,
       name: t.name,
       checked: selectedTokenIds.includes(t.id),
       user: getTokenOwner(t, true),
     }));
 
-    const form = await Dialog.prompt({
-      title: `${game.i18n.localize('SIMOC.AppName')}: ${game.i18n.localize('SIMOC.PrepareParticipants')}`,
+    const form = await foundry.applications.api.DialogV2.prompt({
+      window: {
+        title: `${game.i18n.localize('SIMOC.AppName')}: ${game.i18n.localize('SIMOC.PrepareParticipants')}`,
+      },
+      position: {
+        width: 480,
+      },
       content: await foundry.applications.handlebars.renderTemplate(SIMOC.templates.participantsConfigDialog, {
         participants: tokenParticipants,
         users: game.users
           .filter(u => u.active)
-          .reduce((o, u) => { o[u.id] = u.name; return o; }, {}),
-        stacks: stacks.reduce((o, d) => { o[d.id] = d.name; return o; }, {}),
+          .reduce((o, u) => {
+            o[u.id] = u.name;
+            return o;
+          }, {}),
+        stacks: stacks.reduce((o, d) => {
+          o[d.id] = d.name;
+          return o;
+        }, {}),
         defaultStackId,
         config: SIMOC,
       }),
-      callback: html => html[0].querySelector('form'),
-      label: game.i18n.localize('SIMOC.Start'),
-      options: {
-        classes: [MODULE_ID, game.system.id, 'dialog', 'participants-config'],
-        width: 600,
+      ok: {
+        label: game.i18n.localize('SIMOC.Start'),
+        callback: (event, button) => button.form,
       },
+      rejectClose: true,
+      classes: [MODULE_ID, game.system.id, 'dialog', 'participants-config'],
     });
 
     // Transforms form's data.
     /** @type {ParticipantData[]} */
     const participants = [];
+
     for (const { id } of tokens) {
-      if (form[`${id}.checked`].checked) {
+      const checked = form.elements.namedItem(`${id}.checked`);
+
+      if (checked?.checked) {
         participants.push({
           token: id,
-          user: form[`${id}.user`].value,
-          stack: form[`${id}.stack`].value,
-          auto: form[`${id}.auto`].checked,
+          user: form.elements.namedItem(`${id}.user`).value,
+          stack: form.elements.namedItem(`${id}.stack`).value,
+          auto: form.elements.namedItem(`${id}.auto`).checked,
         });
       }
     }
@@ -426,15 +467,22 @@ export default class CardChooser extends Application {
   /** @override */
   async close(options = {}) {
     if (!options.forceClose) {
-      const toClose = await Dialog.confirm({
-        title: game.i18n.localize('SIMOC.Close'),
-        content: game.i18n.localize('SIMOC.CloseConfirm'),
-        rejectClose: false,
-        options: {
-          classes: [MODULE_ID, game.system.id, 'dialog'],
+      const toClose = await foundry.applications.api.DialogV2.confirm({
+        window: {
+          title: game.i18n.localize('SIMOC.Close'),
           minimizable: false,
         },
+        content: game.i18n.localize('SIMOC.CloseConfirm'),
+        rejectClose: false,
+        yes: {
+          label: game.i18n.localize('SIMOC.Confirm'),
+        },
+        no: {
+          label: game.i18n.localize('SIMOC.Cancel'),
+        },
+        classes: [MODULE_ID, game.system.id, 'dialog'],
       });
+
       if (!toClose) return;
     }
     if (game.user.isGM) {
@@ -508,7 +556,7 @@ export default class CardChooser extends Application {
         // Start
         case this.socketEvents.start: {
           const users = data.participants.map(p => p.user);
-          if(users.includes(game.user.id)) {
+          if (users.includes(game.user.id)) {
             new this({ participants: data.participants }).render(true);
             message = game.i18n.format('SIMOC.Notif.StartInstance', {
               name: `<b>${data.gm}</b>`,
@@ -548,7 +596,7 @@ export default class CardChooser extends Application {
           message = game.i18n.format('SIMOC.Notif.RevealCard', {
             name: `<b>${data.by}</b>`,
             participant: `<b>${p.token.name}</b>`,
-            card:`<b>${p.card.name}</b>`,
+            card: `<b>${p.card.name}</b>`,
           });
           Hooks.callAll(HOOKS_KEYS.REVEAL, data.participant);
           break;

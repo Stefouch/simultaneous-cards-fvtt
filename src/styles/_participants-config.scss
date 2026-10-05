@@ -1,0 +1,69 @@
+/* ------------------------------------------ */
+/*  PARTICIPANTS CONFIG DIALOG                */
+/*   Refactored by: Damián Fraustro           */
+/*    https://fraustro-design.com             */
+/* ------------------------------------------ */
+
+.simultaneous-cards.participants-config {
+  .participants {
+    display: grid;
+    grid-template-columns: auto 20% 30% 10%;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 12px;
+
+    h4 {
+      font-size: revert;
+      font-family: var(--font-primary);
+      line-height: unset;
+      color: inherit;
+      margin: 0 0 0.5rem;
+      padding: 0;
+    }
+  }
+
+  .row-wrapper {
+    display: contents;
+
+    input[type='checkbox'] {
+      justify-content: center;
+      display: inline-flex;
+      align-items: center;
+      height: 100%;
+      margin: 0;
+
+      &::before {
+        text-align: center;
+      }
+    }
+
+    &:hover {
+      > * {
+        color: var(--color-warm-1);
+        background-color: var(--color-dark-6);
+        border-radius: 4px;
+      }
+
+      input[type='checkbox']:not(:checked)::before {
+        color: #ee9b3a;
+      }
+    }
+  }
+
+  .participant-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 6px;
+    padding-block: 1px;
+    gap: 4px;
+    border-radius: 4px;
+  }
+
+  .avatar {
+    width: 30px;
+    height: 30px;
+    border: none;
+  }
+}

@@ -1,0 +1,50 @@
+SIMOC.AppName: Cartas Simultáneas
+SIMOC.Auto: Auto
+SIMOC.AutoHelpTooltip: Marca si se elegirá una carta al azar para este participante.
+SIMOC.ChooseStack: Elije la Pila de Cartas por Defecto a Usar
+SIMOC.ChooseCard: Elije una Carta
+SIMOC.ChooseCardHint: Elije la carta para el participante.
+SIMOC.Cards: Cartas
+SIMOC.CardsHelpTooltip: Elije la pila de cartas a usar para el participante.
+SIMOC.Close: Cerrar
+SIMOC.CloseConfirm: ¿Estás seguro?
+SIMOC.Confirm: Confirmar
+SIMOC.Cancel: Cancelar
+SIMOC.Participant: Participante
+SIMOC.ParticipantHelpTooltip: >-
+  Listado de fichas.
+  Marcar la caja para elegir la ficha como un participante.
+  (Las fichas seleccionadas en la escena son pre-marcadas.)
+SIMOC.PrepareParticipants: Preparar Participantes
+SIMOC.Restart: Reiniciar
+SIMOC.Reveal: Revelar
+SIMOC.RevealAll: Revelar Todas
+SIMOC.Start: Iniciar
+SIMOC.User: Usuario
+SIMOC.UserHelpTooltip: Selecciona el usuario que elegirá la carta para el participante.
+SIMOC.Validate: Validar Elecciones
+SIMOC.WaitForPlayers: Esperando por las elecciones de todos los jugadores...
+SIMOC.ReadyForValidation: ¡Listo para validar!
+SIMOC.Message.Flavor: Carta elegida por {name}
+SIMOC.Notif.OnlyGM: ¡Solo el GM puede iniciar!
+SIMOC.Notif.InstanceError: ¡Una instancia de elección de carta ya existe!
+SIMOC.Notif.ParticipantError: >-
+  ¡No hay participante!
+  Por favor elije sus fichas en el lienzo y/o márcalos en el diálogo de configuración.
+SIMOC.Notif.StackError: >-
+  ¡No se encontró ninguna pila de cartas!
+  Por favor, primero crea una pila de cartas y añadele algunas cartas.
+SIMOC.Notif.StartInstance: '¡{name} inició una nueva instancia de elección de carta!'
+SIMOC.Notif.UpdateInstance: '¡{name} eligió una carta para {participant}!'
+SIMOC.Notif.ValidateInstance: '¡{name} validó todas las elecciones!'
+SIMOC.Notif.RestartInstance: '¡{name} reinició la instancia de elección de carta!'
+SIMOC.Notif.CloseInstance: '¡{name} terminó la instancia de elección de carta!'
+SIMOC.Notif.RevealCard: '¡{name} reveló la carta {card} para {participant}!'
+SETTINGS.SIMOC.AddControlButtonName: Botón de Control
+SETTINGS.SIMOC.AddControlButtonHint: Agregar un botón de control para este módulo en las herramientas de control del lienzo para las fichas.
+SETTINGS.SIMOC.SendRevealMessageName: Enviar Mensaje de Revelado
+SETTINGS.SIMOC.SendRevealMessageHint: Mandar un mensaje cuando una carta elegida es revelada.
+SETTINGS.SIMOC.WhisperRevealMessageName: Susurrar mensaje
+SETTINGS.SIMOC.WhisperRevealMessageHint: Cuando se ha habilitado, los mensajes revelados son enviados (susurrados) sólo a los participantes.
+SETTINGS.SIMOC.UseActorArtName: Usar arte del Actor en lugar de la ficha
+SETTINGS.SIMOC.UseActorArtHint: Si el arte de la ficha está animado, puede provocar problemas al mostrarse dentro de la interfase. Usar el arte del Actor en cambio.

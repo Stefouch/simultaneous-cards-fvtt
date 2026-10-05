@@ -7,11 +7,7 @@ import { MODULE_ID } from '@module/constants';
  * @returns {Cards}
  */
 export function getCardsStack(idOrName) {
-  return game.cards.find(stack =>
-    stack.id === idOrName ||
-    stack.name === idOrName ||
-    stack.name.includes(idOrName),
-  );
+  return game.cards.find(stack => stack.id === idOrName || stack.name === idOrName || stack.name.includes(idOrName));
 }
 
 /**
@@ -19,9 +15,9 @@ export function getCardsStack(idOrName) {
  * @param {Cards[]} cards
  * @param {Object} [options]
  * @param {string} [options.title='Choose a Card'] Title of the dialog
- * @param {string} [options.label='OK'] Label of the button
  * @param {string} [options.description] Additional description added on top
  */
+
 export async function chooseCard(cards, options = {}) {
   if (cards.length <= 1) return cards[0];
 
@@ -31,24 +27,27 @@ export async function chooseCard(cards, options = {}) {
     config: SIMOC,
   });
 
-  const id = await Dialog.prompt({
-    title: options.title ?? 'Choose a Card',
-    label: options.label ?? 'OK',
+  const id = await foundry.applications.api.DialogV2.prompt({
+    window: {
+      title: options.title ?? 'Choose a Card',
+      resizable: true,
+    },
+    position: {
+      width: 600,
+    },
     content,
-    render: html => {
-      html.find('input[type=radio]').on('click', event => {
-        const btn = event.currentTarget.closest('.window-content').querySelector('button.ok');
-        btn.click();
+    ok: {
+      callback: (event, button) => button.form.elements.card.value,
+    },
+    render: (event, dialog) => {
+      dialog.element.querySelectorAll('input[type="radio"]').forEach(input => {
+        input.addEventListener('click', () => {
+          dialog.element.querySelector('button[data-action="ok"]')?.click();
+        });
       });
     },
-    callback: html => html[0].querySelector('form').card.value,
     rejectClose: false,
-    options: {
-      classes: [MODULE_ID, game.system.id, 'dialog', 'card-chooser'],
-      resizable: true,
-      width: 600,
-      // height: 440,
-    },
+    classes: [MODULE_ID, game.system.id, 'dialog', 'card-chooser'],
   });
 
   return cards.find(c => c.id === id);
@@ -68,21 +67,26 @@ export async function chooseCardsStack(stacks, options = {}) {
   const selectOptions = stacks.map(d => `<option value="${d.id}">${d.name}</option>`);
 
   const content = `
-<form autocomplete="off">
-  <div class="form-group">
-    <select id="stack">
-      ${selectOptions.join('\n')}
-    </select>
-  </div>
-</form>`;
+<div class="form-group">
+  <select id="stack" name="stack">
+    ${selectOptions.join('\n')}
+  </select>
+</div>`;
 
-  const id = await Dialog.prompt({
-    title: options.title ?? 'Choose a Stack',
-    label: options.label ?? 'OK',
+  const id = await foundry.applications.api.DialogV2.prompt({
+    window: {
+      title: options.title ?? 'Choose a Stack',
+    },
+    position: {
+      width: 300,
+    },
     content,
-    callback: html => html[0].querySelector('form').stack.value,
+    ok: {
+      label: options.label ?? 'OK',
+      callback: (event, button) => button.form.elements.stack.value,
+    },
     rejectClose: false,
-    options: { classes: [game.system.id, 'dialog', 'stack-chooser'] },
+    classes: [game.system.id, 'dialog', 'stack-chooser'],
   });
   return stacks.find(s => s.id === id);
 }

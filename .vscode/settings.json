@@ -1,7 +1,14 @@
 {
-  "editor.formatOnSave": false,
-  "i18n-ally.localesPaths": [
-    "src/lang"
-  ],
+  "editor.formatOnSave": true,
+  "i18n-ally.localesPaths": ["src/lang"],
   "i18n-ally.keystyle": "flat",
+  "liveSassCompile.settings.includeItems": ["/src/simultaneous-cards.scss"],
+  "liveSassCompile.settings.formats": [
+    {
+      "format": "expanded",
+      "extensionName": ".css",
+      "savePath": "/dist",
+      "savePathReplacementPairs": null
+    }
+  ]
 }
